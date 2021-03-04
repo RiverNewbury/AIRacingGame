@@ -7,7 +7,7 @@
 
 
 ## To Server
-
+ - In Rust
  - Json message with code + username
  - Request leaderboard
 
