@@ -1,0 +1,16 @@
+[package]
+name = "ai-racing-server"
+version = "0.1.0"
+# 'authors' was auto-generated. Feel free to add yourself
+authors = ["sharnoff <github@max.sharnoff.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# The dependencies commented below are things we'll need - I've listed them here tentatively because
+# they're not actually in use yet.
+[dependencies]
+# serde = ?
+# rocket = ?
+# pyo3 = ?
+
