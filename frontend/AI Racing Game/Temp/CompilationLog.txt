@@ -1,0 +1,50 @@
+# Starting compiling UnityEngine.TestRunner.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-96dc1b586aa3eb27bab905e2d346f48e
+# Starting compiling UnityEngine.UI.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-8d62e93e70b567061af175aca54eaa95
+# Starting compiling UnityEditor.TestRunner.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-151a01b47556c699c8bc4bbe4da6235e
+# Starting compiling UnityEditor.UI.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-a0546eb2cfbda51d0b08dfc913d3feae
+# Starting compiling Unity.VSCode.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-37bf833f3db5ab4f4bdb23486fe17a71
+# Starting compiling Unity.2D.Tilemap.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-21c90732c6f323503affef414e3018b3
+# Starting compiling UnityEngine.Purchasing.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-a8896bc9f2d1be806bcff0be05c52a8d
+# Starting compiling Unity.VisualStudio.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-60df8f0f3548aa0acb436d43aeeac5ef
+# Starting compiling Unity.Timeline.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-aec6b79ca81e70d328343f8b80183c3a
+# Starting compiling Unity.TextMeshPro.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-6a5bdc1b4a914c3bd87bd01956fa97e2
+# Starting compiling Unity.CollabProxy.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-98f45c2fc416f5165b3021d957593fe7
+# Starting compiling Unity.2D.Sprite.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-5242296aab46d5c3fa3cb513cc0a1e3d
+# Starting compiling Unity.Timeline.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-9950564eb15dac336be236cd6f21a520
+# Starting compiling UnityEditor.Purchasing.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-9e69fdec420e8dba7bb7d0e6229121cb
+# Starting compiling Unity.Rider.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-798b84e8ab0bdf2e19fb827ef517fdbc
+# Starting compiling UnityEngine.SpatialTracking.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-3b4e8900a7cffef01ae199da447dcfd9
+# Starting compiling Unity.TextMeshPro.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-435068a523e2afa2a9557ff471deac43
+# Starting compiling Analytics.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-f11ef0e525fdf75a2a317d05a7ee6133
+# Starting compiling UnityEngine.XR.LegacyInputHelpers.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-e16f032154e3ee9499a7841a43539a52
+# Starting compiling UnityEditor.SpatialTracking.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-997bcb0bddba89885a290ea68da0c860
+# Starting compiling UnityEngine.Advertisements.Editor.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-fe579d35a0af25e1f923d40744c21f61
+# Starting compiling Unity.Analytics.DataPrivacy.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-8755f1e8b1c64170ca972de1ef5eed18
+# Starting compiling UnityEditor.XR.LegacyInputHelpers.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-824de15f42a0ec158a00a5cd80ffddaa
+# Starting compiling UnityEngine.Advertisements.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-fe1c169adc16fd88eb96a8488d3eae1c
+# Starting compiling UnityEngine.Monetization.dll
+/home/luca/Unity/Hub/Editor/2020.3.0f1/Editor/Data/Tools/RoslynScripts/unity_csc.sh /noconfig @Temp/UnityTempFile-3bc232663b8f18514a6a392cdc961f45
