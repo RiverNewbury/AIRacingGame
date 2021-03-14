@@ -80,7 +80,7 @@ const CAR_WIDTH: f32 = 0.3;
 
 /// All of the information about the car at a particular point in time
 #[derive(Copy, Clone)]
-struct Car {
+pub struct Car {
     /// The position of the car
     pos: Point,
     /// The angle the car is facing, anticlockwise from the positive y direction
@@ -91,7 +91,7 @@ struct Car {
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
 #[derive(Copy, Clone)]
-struct Point {
+pub struct Point {
     x: f32,
     y: f32,
 }
@@ -314,7 +314,7 @@ impl Racetrack {
         // It turns out to be useful to have some way of referring to directions. We'll use this at
         // a couple points later.
         #[rustfmt::skip]
-        #[derive(Copy, Clone)]
+        #[derive(Copy, Clone, PartialEq, Eq)]
         enum Direction { Up, Down, Left, Right }
         use Direction::*;
 
@@ -403,7 +403,7 @@ impl Racetrack {
         let mut grid = Vec::with_capacity(height);
 
         // While we're iterating over the entire grid, we'll store the tiles representing the
-        // finish line for later, just so that we don't have to search for it.
+        // finish line for later, just so that we won't have to search for them.
         let mut finish_line_tiles: HashSet<(usize, usize)> = HashSet::new();
 
         for (y, row) in initial_grid.rows.iter().enumerate() {
@@ -522,68 +522,85 @@ impl Racetrack {
         // of the constraints of `GridTile::Border`, but there should be enough information here to
         // eventually do it in a way that makes sense. The tracking issue for this is here:
         //   https://github.com/RiverNewbury/AIRacingGame/issues/1
-        //
+
         // Constraint 3:
         //
-        // In order to check that the finish line is valid, we'll try to construct it! To expand on
-        // the precise requirements, we'll say that the finish line should form a rough
-        // approximation of a line, e.g.
+        // The ideal implementation here would allow the finish line to be flexible, such that we
+        // generate the it as the only line that passes through all of the finish line tiles (and
+        // no additional ones). We'd take the finish line tiles as something like:
         //    ╔═══════╗    ╔═══╗
         //    ║**     ║    ║*  ║
         //    ║  ***  ║ or ║ * ║
         //    ║     **║    ║  *║
         //    ╚═══════╝    ╚═══╝
-        // In each case, we'll define the finish line as the simplest straight line that passes
-        // through all of the finish line tiles *and no additional tiles*. It should terminate at
-        // the edge of the track, in `Border` tiles on both sides.
+        // This sort of thing is *really* hard though, so we aren't doing that yet.
+        // (TODO: Proper finish line)
         //
-        // The only non- finish-line tile that we'll allow it to pass through is the starting tile.
-        // This means that all of the tiles in the finish line must be adjacent (including
-        // diagonals). We'll start from some point on the finish line and go in both directions,
-        // determining the slope of the line as we go:
-        let init_finish_tile = finish_line_tiles
-            .iter()
-            .next()
-            .cloned()
-            .ok_or_else(|| "no defined finish line")?;
+        // Currently, we just take the finish line as a horizontal line going through the middle of
+        // the starting tile, corresponding to how the car starts facing upwards.
 
-        // First, going in the up/right direction:
-        //
-        // `primary_upright` is either `Up` or `Right`
-        let mut primary_upright: Option<Direction> = None;
-        // Either direction in a different axis to `primary_upright`
-        let mut secondary_upright: Option<Direction> = None;
-        let mut upright_ratio_bound = usize::MAX;
-        let mut upright_finish_tile = init_finish_tile;
+        let start_row = initial_grid.start_tile.1;
+        let start_col = initial_grid.start_tile.0;
 
-        // Marker for whether the starting tile is possibly included above
-        let mut start_tile_included_upright = Some(false);
+        // The pair of points that define the finish line. For now, this is just the middle of the
+        // left and right sides of the starting tile.
+        let finish_line = (
+            start_car_pos.add_x(-0.5 * tile_size),
+            start_car_pos.add_x(0.5 * tile_size),
+        );
 
-        loop {
-            // From `upright_finish_tile`, see if we can find any neighbors above, to the right, or
-            // up and to the right that are also finish tiles. If we aren't a border tile, then
-            // we can force the start tile to be included here if there aren't any others. If we
-            // aren't a border tile and there aren't any adjacent finish line tiles, that's an
-            // error.
-            //
-            // Additionally, if we have a primary direction set, we can't go fully in the secondary
-            // direction (e.g. if we're primarily going up, we can only look up or up and to the
-            // {right,left}).
+        // We need to make sure that all of the finish-line tiles in the graph are accounted for in
+        // this area of the graph.
+        let mut num_finish_tiles_accounted_for = 0;
 
-            // FINISHING NOTES:
-            //
-            // This still needs to be implemented. I'll finish it up ASAP. It really just is this
-            // final condition that needs to be done to finish up the racetrack parsing /
-            // generation.
-            //  - @sharnoff, March 4 2021
+        // Go left of the starting position:
+        for tile in grid[start_row][..start_col].iter_mut().rev() {
+            match tile {
+                GridTile::Border {
+                    contains_finish_line,
+                    ..
+                }
+                | GridTile::Inside {
+                    contains_finish_line,
+                } => *contains_finish_line = true,
+                // We're only going as far as the border of the track in this direction; if we
+                // simply `continue`d, it would be possible to count the finish line on both sides
+                // of a loop -- something we don't want to do.
+                GridTile::Outside => break,
+            }
 
-            // if primary_upright != Some(Up) {
-            //
-            // }
-
-            todo!()
+            num_finish_tiles_accounted_for += 1;
         }
 
-        todo!()
+        // And then go to the right:
+        for tile in grid[start_row][start_col + 1..].iter_mut() {
+            #[rustfmt::skip]
+            match tile {
+                GridTile::Border { contains_finish_line, ..  }
+                | GridTile::Inside { contains_finish_line } => *contains_finish_line = true,
+                GridTile::Outside => break,
+            };
+
+            num_finish_tiles_accounted_for += 1;
+        }
+
+        // Finally, check that all of the finish line tiles in the parsed representation were
+        // accounted for in the horizontal line here.
+        if num_finish_tiles_accounted_for != finish_line_tiles.len() {
+            return Err(
+                "malformed finish line; should span the track horizontally from the start tile"
+                    .to_owned(),
+            );
+        }
+
+        // And then we're done! We just need to return the final `Racetrack`:
+        Ok(Racetrack {
+            height,
+            width,
+            grid,
+            initial_car_state,
+            finish_line,
+            tile_size,
+        })
     }
 }
