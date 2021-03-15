@@ -2,7 +2,7 @@
 
 ## To do
 - menu scene to enter login type details
-	* thing for user to upload script
+	* thing for user to enter script
 	* code to send script and user details to server
 	* code to switch scenes once server responds
 - Network code to receive messages from server and update car position
