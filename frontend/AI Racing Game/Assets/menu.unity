@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 118288082}
   - component: {fileID: 118288081}
   - component: {fileID: 118288080}
+  - component: {fileID: 118288083}
   m_Layer: 5
   m_Name: Play Button
   m_TagString: Untagged
@@ -205,7 +206,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 118288081}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 118288083}
+        m_TargetAssemblyTypeName: sendCode, Assembly-CSharp
+        m_MethodName: SendCode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &118288081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,6 +257,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118288078}
   m_CullTransparentMesh: 1
+--- !u!114 &118288083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118288078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd64eda7b457e308b652f5064385174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  codeField: {fileID: 735975166}
+  usernameField: {fileID: 940443359}
 --- !u!1 &251402596
 GameObject:
   m_ObjectHideFlags: 0
