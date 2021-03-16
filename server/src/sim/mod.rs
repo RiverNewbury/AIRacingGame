@@ -1,5 +1,7 @@
 //! This is the module which deals with user code and also simulates the car around the racetrack
 
+use crate::code::Code;
+
 mod racetrack;
 
 use racetrack::Racetrack;
@@ -12,8 +14,8 @@ const TICKS_PER_UPDATE: i32 = 10;
 // Almost all the computation will be done in the Simulation Object
 
 struct Simulation {
-    id: usize,    //For keeping track of which call should be returned to who
-    code: String, //TODO: Work out how code simulation actually works
+    id: usize,  //For keeping track of which call should be returned to who
+    code: Code, //TODO: Work out how code simulation actually works
     track: Racetrack,
 }
 

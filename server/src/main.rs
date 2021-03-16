@@ -6,6 +6,7 @@
 //! * Sending back the full race & time; and
 //! * Displaying the leaderboad upon request
 
+mod code;
 mod sim;
 
 fn main() {
