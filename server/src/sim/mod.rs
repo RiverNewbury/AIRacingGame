@@ -5,9 +5,9 @@ mod racetrack;
 use racetrack::Racetrack;
 
 // A tick is the unit on which thte simulation will update the world
-const ticksPerSecond: i32 = 100;
+const TICKS_PER_SECOND: i32 = 100;
 // The number of ticks until the users code will be asked what it wants to do next
-const ticksPerUpdate: i32 = 10;
+const TICKS_PER_UPDATE: i32 = 10;
 
 // Almost all the computation will be done in the Simulation Object
 
