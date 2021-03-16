@@ -1,6 +1,7 @@
 //! This is the module which deals with user code and also simulates the car around the racetrack
 
 use crate::code::Code;
+use serde::Serialize;
 
 mod racetrack;
 
@@ -19,7 +20,8 @@ struct Simulation {
     track: Racetrack,
 }
 
-struct SimulationHistory; // TODO
+#[derive(Serialize)]
+pub struct SimulationHistory; // TODO
 
 impl Simulation {
     fn simulate(self) -> Result<SimulationHistory, String> {
