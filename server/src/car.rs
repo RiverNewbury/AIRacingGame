@@ -1,4 +1,5 @@
-// Note: the size of the car really only makes sense when compared to the size of the tiles in a
+// THIS IS NOT USED ATM
+//Note: the size of the car really only makes sense when compared to the size of the tiles in a
 // racetrack grid. The size of the car is probably unlikely to change, whereas the tile size is
 // explicitly variable.
 

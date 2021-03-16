@@ -7,6 +7,7 @@
 //! * Displaying the leaderboad upon request
 
 mod sim;
+mod racetrack;
 
 fn main() {
     println!("Hello, world!");
