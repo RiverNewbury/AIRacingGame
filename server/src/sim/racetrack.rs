@@ -25,29 +25,29 @@ use std::collections::HashSet;
 /// wall), splitting the racetrack into tiles helps us to limit the search space for lines that we
 /// might have intersected with.
 #[derive(Clone)]
-struct Racetrack {
+pub struct Racetrack {
     /// The height, in tiles of the racetrack. Equal to `grid.len()`
-    height: usize,
+    pub height: usize,
     /// The width, in tiles of the racetrack. Equal to `grid[i].len()` for all `i`
-    width: usize,
+    pub width: usize,
 
     /// Rows of grid tiles. The tile at `grid[i][j]` covers the rectangle
     /// `(i*tile_size, j*tile_size)` to `((i + 1)*tile_size, (j + 1)*tile_size)`.
-    grid: Vec<Vec<GridTile>>,
+    pub grid: Vec<Vec<GridTile>>,
 
     /// The starting state of the car
-    initial_car_state: Car,
+    pub initial_car_state: Car,
 
     /// Two points defining the finish line. Individual tiles have a marker to indicate whether the
     /// finish line crosses them; this defines the *way* that that happens.
-    finish_line: (Point, Point),
+    pub finish_line: (Point, Point),
 
     /// The size of an individual tile
-    tile_size: f32,
+    pub tile_size: f32,
 }
 
 #[derive(Copy, Clone)]
-enum GridTile {
+pub enum GridTile {
     /// A tile on the edge of the track. `border` gives two points that this edge of the
     /// racetrack passes through - the side of the border that's inside the racetrack can be
     /// inferred from the neighboring tiles
@@ -74,31 +74,31 @@ enum GridTile {
 // explicitly variable.
 
 /// The absolute size length of the car
-const CAR_LENGTH: f32 = 1.0;
+pub const CAR_LENGTH: f32 = 1.0;
 /// The width of the car
-const CAR_WIDTH: f32 = 0.3;
+pub const CAR_WIDTH: f32 = 0.3;
 
 /// All of the information about the car at a particular point in time
 #[derive(Copy, Clone)]
 pub struct Car {
     /// The position of the car
-    pos: Point,
+    pub pos: Point,
     /// The angle the car is facing, anticlockwise from the positive y direction
-    angle: f32,
+    pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
-    speed: f32,
+    pub speed: f32,
 }
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
 #[derive(Copy, Clone)]
 pub struct Point {
-    x: f32,
-    y: f32,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Point {
     /// Produces a new point with the x-coordinate increased by the given amount
-    fn add_x(self, x_inc: f32) -> Self {
+    pub fn add_x(self, x_inc: f32) -> Self {
         Point {
             x: self.x + x_inc,
             ..self
@@ -106,7 +106,7 @@ impl Point {
     }
 
     /// Produces a new point with the y-coordinate increased by the given amount
-    fn add_y(self, y_inc: f32) -> Self {
+    pub fn add_y(self, y_inc: f32) -> Self {
         Point {
             y: self.y + y_inc,
             ..self

@@ -1,5 +1,7 @@
 //! This is the module which deals with user code and also simulates the car around the racetrack
 
+mod racetrack;
+
 use racetrack::Racetrack;
 
 // A tick is the unit on which thte simulation will update the world
@@ -10,11 +12,15 @@ const ticksPerUpdate: i32 = 10;
 // Almost all the computation will be done in the Simulation Object
 
 struct Simulation {
-    id: Int, //For keeping track of which call should be returned to who
-    code: String //TODO: Work out how code simulation actually works
-    track: Racetrack
+    id: usize,    //For keeping track of which call should be returned to who
+    code: String, //TODO: Work out how code simulation actually works
+    track: Racetrack,
 }
 
+struct SimulationHistory; // TODO
+
 impl Simulation {
-    fn simulate
+    fn simulate(self) -> Result<SimulationHistory, String> {
+        todo!()
+    }
 }
