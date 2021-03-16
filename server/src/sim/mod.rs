@@ -5,7 +5,7 @@ use serde::Serialize;
 
 mod racetrack;
 
-use racetrack::Racetrack;
+pub use racetrack::Racetrack;
 
 // A tick is the unit on which thte simulation will update the world
 const TICKS_PER_SECOND: i32 = 100;
@@ -14,17 +14,20 @@ const TICKS_PER_UPDATE: i32 = 10;
 
 // Almost all the computation will be done in the Simulation Object
 
-struct Simulation {
+pub struct Simulation {
     id: usize,  //For keeping track of which call should be returned to who
     code: Code, //TODO: Work out how code simulation actually works
     track: Racetrack,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Score; // TODO
+
 #[derive(Serialize)]
 pub struct SimulationHistory; // TODO
 
 impl Simulation {
-    fn simulate(self) -> Result<SimulationHistory, String> {
+    pub fn simulate(self) -> Result<(Score, SimulationHistory), String> {
         todo!()
     }
 }

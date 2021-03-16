@@ -275,7 +275,7 @@ impl InitialGrid {
 
 impl Racetrack {
     /// Parses a `Racetrack` description from a string
-    fn from_str(input: &str) -> Result<Self, String> {
+    pub fn from_str(input: &str) -> Result<Self, String> {
         let init_grid = InitialGrid::from_str(input)?;
 
         // For now, we'll use the same tile size everywhere. There probably isn't an immediate need

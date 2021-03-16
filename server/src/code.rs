@@ -13,7 +13,7 @@ pub struct ExecEnvironment; // TODO
 
 impl Code {
     /// Parses the user's code, returning any error as a string if there was one
-    pub fn from_str(input: String) -> Result<Code, String> {
+    pub fn from_str(input: &str) -> Result<Code, String> {
         todo!()
     }
 
