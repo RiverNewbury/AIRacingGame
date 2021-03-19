@@ -87,6 +87,12 @@ pub struct Car {
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
     pub speed: f32,
+    /// The maximum speed of the car
+    pub max_speed: f32,
+    /// The maximum acceleration of the car
+    pub max_acc:f32,
+    /// Tge naxunyn deceleration of the car
+    pub max_dec:f32,
 }
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
@@ -273,7 +279,13 @@ impl InitialGrid {
     }
 }
 
+// Arbitrary variables
+const CAR_MAX_SPEED: f32 = 10.0;
+const CAR_MAX_ACC: f32 = 2.0;
+const CAR_MAX_DEC:f32 = 2.0;
+
 impl Racetrack {
+
     /// Parses a `Racetrack` description from a string
     pub fn from_str(input: &str) -> Result<Self, String> {
         let init_grid = InitialGrid::from_str(input)?;
@@ -306,6 +318,10 @@ impl Racetrack {
             // The car always starts at a standstill - another thing that could be changed but
             // probably doesn't need to be
             speed: 0_f32,
+            max_speed: CAR_MAX_SPEED,
+            max_acc: CAR_MAX_ACC,
+            max_dec: CAR_MAX_DEC
+
         };
 
         let width = initial_grid.width;
