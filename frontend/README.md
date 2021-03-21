@@ -14,3 +14,9 @@
 - Leaderboard
 	* network code to get leaderboard
 	* UI to display leaderboard
+	* links to user profiles shown on leaderboard
+- Profile page to display info (need to at least make sure this is all stored in first iterartion)
+	* get user info from server
+	* previous code
+	* previous times
+	* best leaderboard placement
