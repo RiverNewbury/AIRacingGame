@@ -83,11 +83,11 @@ pub const CAR_WIDTH: f32 = 0.3;
 pub struct Car {
     /// The position of the car
     pub pos: Point,
-    /// The angle the car is facing, anticlockwise from the positive y direction
+    /// The angle the car is facing, anticlockwise from the positive y direction - in radians
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
     pub speed: f32,
-    /// The maximum speed of the car
+    /// The maximum speed of the car in units per tick
     pub max_speed: f32,
     /// The maximum acceleration of the car
     pub max_acc:f32,
@@ -117,6 +117,14 @@ impl Point {
             y: self.y + y_inc,
             ..self
         }
+    }
+
+    pub fn new(x: f32, y:f32) -> Self {
+        Point{x, y}
+    }
+    //TODO - I'm not sure what was done above with ..self - do that if it is good
+    pub fn add(self, p : &Point) -> Self {
+        self.new(self.x + p.x, self.y + p.y)
     }
 }
 
