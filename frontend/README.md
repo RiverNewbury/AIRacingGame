@@ -20,3 +20,8 @@
 	* previous code
 	* previous times
 	* best leaderboard placement
+
+## First Iteration
+- no login, just take name
+- submits name and script to server
+- car just represented very basically (eg. percentage, line)
