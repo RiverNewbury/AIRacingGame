@@ -33,6 +33,7 @@ pub struct Score {
 // Serialization doesn't like Car or racetrack
 #[derive(Serialize)]
 pub struct SimulationHistory{
+    #[serde(skip)]
     track: Racetrack,
     history: Vec<Car>,
     tps: i32 // Ticks per second used for this simulation
@@ -47,11 +48,11 @@ impl Simulation {
     // Currently literally only checks that the car is going at a positive speed and is on the finish line
     // Currently doesn't check starting possition as that'd probably mean that as soon as the car moves it'd have finished
     fn passed_finish_line(&self, start: Pos, end: Pos) -> bool{
-        let mut point_checking = start.clone()
-        let delta = Pos::new(change.x / NUMBER_CHECKS, change.y/ NUMBER_CHECKS)
+        let mut point_checking = start.clone();
+        let delta = Pos::new(change.x / NUMBER_CHECKS, change.y/ NUMBER_CHECKS);
 
         for i in 0..(NUMBER_CHECKS){
-            point_checking = point_checking.add(delta)
+            point_checking = point_checking.add(delta);
             if self.am_on_finish_line(point_checking) && self.car.speed > 0{
                 true
             }
@@ -61,14 +62,14 @@ impl Simulation {
 
     // TODO - make more inteligent decisions about when the car should die
     fn hit_wall(&self, start : Pos, change : Pos) -> bool{
-        let mut point_checking = start.clone()
-        let delta = Pos::new(change.x / NUMBER_CHECKS, change.y/ NUMBER_CHECKS)
+        let mut point_checking = start.clone();
+        let delta = Pos::new(change.x / NUMBER_CHECKS, change.y/ NUMBER_CHECKS);
 
         for i in 0..(NUMBER_CHECKS+1){
             if !self.in_bounds(point_checking) {
                 true
             }
-            point_checking = point_checking.add(delta)
+            point_checking = point_checking.add(delta);
         }
         false
     }
@@ -88,13 +89,12 @@ impl Simulation {
 
 
     // TODO -
-    // I hate this - it's terrible coding please kill me
-    //  in_bounds and am_on_finish_line could be combined
+    //  In_bounds and am_on_finish_line could be combined
     fn in_bounds(&self, point: Pos) -> bool{
-        let square = self.track.grid[point.x as usize][point.y as usize]
+        let square = self.track.grid[point.x as usize][point.y as usize];
         match square {
-            Outside => false
-            Inside(_) => true
+            Outside => false,
+            Inside(_) => true,
             Border((p1, p2), _) => {
                 // True/ false will tell us which side of line on
                 // TODO - Will be sad if point is one line - probably bad
@@ -131,10 +131,10 @@ impl Simulation {
     }
 
     fn am_on_finish_line(&self, p : Pos){
-        let square = self.track.grid[p.x as usize][p.y as usize]
+        let square = self.track.grid[p.x as usize][p.y as usize];
         match square {
-            Outside => false
-            Inside(b) => b
+            Outside => false,
+            Inside(b) => b,
             Border((p1, p2),  b) => {
                 if b && self.in_bounds(p) {
                     true
@@ -169,8 +169,8 @@ impl Simulation {
             // Check 0<= acc <= 1>
             match what_to_do {
                 Some(w) => {
-                    self.car.speed = speed_after_tick(self.car.speed, w.acc, w.final_speed)
-                    self.car.angle = angle_after_tick(self.car.angle, w.turning_speed, w.final_angle)
+                    self.car.speed = speed_after_tick(self.car.speed, w.acc, w.final_speed);
+                    self.car.angle = angle_after_tick(self.car.angle, w.turning_speed, w.final_angle);
                     let start_pos = self.car.pos.clone;
                     // TODO - Check I've got this the right way around
                     let traveled = Point {
@@ -189,7 +189,7 @@ impl Simulation {
                        }
                        (score, hist)
                     }
-                    passed_finish = self.passed_finish_line(start_pos, self.car.pos)
+                    passed_finish = self.passed_finish_line(start_pos, self.car.pos);
                 }
 
                 Err(w) => Err(w)

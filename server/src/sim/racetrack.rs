@@ -79,7 +79,7 @@ pub const CAR_LENGTH: f32 = 1.0;
 pub const CAR_WIDTH: f32 = 0.3;
 
 /// All of the information about the car at a particular point in time
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize)]
 pub struct Car {
     /// The position of the car
     pub pos: Point,
@@ -87,11 +87,15 @@ pub struct Car {
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
     pub speed: f32,
+
     /// The maximum speed of the car in units per tick
+    #[serde(skip)]
     pub max_speed: f32,
     /// The maximum acceleration of the car
+    #[serde(skip)]
     pub max_acc:f32,
-    /// Tge naxunyn deceleration of the car
+    /// The maximum deceleration of the car
+    #[serde(skip)]
     pub max_dec:f32,
 }
 
@@ -119,9 +123,11 @@ impl Point {
         }
     }
 
+
     pub fn new(x: f32, y:f32) -> Self {
         Point{x, y}
     }
+
     //TODO - I'm not sure what was done above with ..self - do that if it is good
     pub fn add(self, p : &Point) -> Self {
         self.new(self.x + p.x, self.y + p.y)
@@ -329,7 +335,6 @@ impl Racetrack {
             max_speed: CAR_MAX_SPEED,
             max_acc: CAR_MAX_ACC,
             max_dec: CAR_MAX_DEC
-
         };
 
         let width = initial_grid.width;
