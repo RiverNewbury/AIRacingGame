@@ -7,10 +7,10 @@ pub struct Code; // TODO
 
 //TODO: Work out how code simulation actually works
 pub struct Output {
-    acc: f32, // fraction of how much the pedal is down - Between -1 and 1 negative being breaking
-    final_speed: f32, // Speed at which to stop acceleerating/decelerating
-    turning_speed: f32, // Speed in rad/tick to turn
-    final_angle: f32 // final angle that wish to be heading in
+    pub acc: f32, // fraction of how much the pedal is down - Between -1 and 1 negative being breaking
+    pub final_speed: f32, // Speed at which to stop acceleerating/decelerating
+    pub turning_speed: f32, // Speed in rad/tick to turn
+    pub final_angle: f32, // final angle that wish to be heading in
 }
 
 /// The execution environment for user-submitted code, providing information about the state of the

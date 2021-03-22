@@ -12,6 +12,8 @@
 // creating and manipulating the racetrack; `sim` probably better represents the actual physics
 // simulation built on top of the racetrack.
 
+use super::Point;
+use serde::Serialize;
 use std::collections::HashSet;
 
 /// In-memory representation of a racetrack
@@ -69,6 +71,32 @@ pub enum GridTile {
     Outside,
 }
 
+impl GridTile {
+    /// Returns true iff the `GridTile` is the `Inside` variant
+    pub fn is_inside(&self) -> bool {
+        match self {
+            Self::Inside { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns true iff the `GridTile` is the `Border` variant
+    pub fn is_border(&self) -> bool {
+        match self {
+            Self::Border { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns true iff the `GridTile` is the `Outside` variant
+    pub fn is_outside(&self) -> bool {
+        match self {
+            Self::Outside => true,
+            _ => false,
+        }
+    }
+}
+
 // Note: the size of the car really only makes sense when compared to the size of the tiles in a
 // racetrack grid. The size of the car is probably unlikely to change, whereas the tile size is
 // explicitly variable.
@@ -93,45 +121,10 @@ pub struct Car {
     pub max_speed: f32,
     /// The maximum acceleration of the car
     #[serde(skip)]
-    pub max_acc:f32,
+    pub max_acc: f32,
     /// The maximum deceleration of the car
     #[serde(skip)]
-    pub max_dec:f32,
-}
-
-/// An (x, y) pair, used to represent points within the region allocated to the racetrack
-#[derive(Copy, Clone)]
-pub struct Point {
-    pub x: f32,
-    pub y: f32,
-}
-
-impl Point {
-    /// Produces a new point with the x-coordinate increased by the given amount
-    pub fn add_x(self, x_inc: f32) -> Self {
-        Point {
-            x: self.x + x_inc,
-            ..self
-        }
-    }
-
-    /// Produces a new point with the y-coordinate increased by the given amount
-    pub fn add_y(self, y_inc: f32) -> Self {
-        Point {
-            y: self.y + y_inc,
-            ..self
-        }
-    }
-
-
-    pub fn new(x: f32, y:f32) -> Self {
-        Point{x, y}
-    }
-
-    //TODO - I'm not sure what was done above with ..self - do that if it is good
-    pub fn add(self, p : &Point) -> Self {
-        self.new(self.x + p.x, self.y + p.y)
-    }
+    pub max_dec: f32,
 }
 
 // Characters that represent the bounds of the racetrack
@@ -296,10 +289,9 @@ impl InitialGrid {
 // Arbitrary variables
 const CAR_MAX_SPEED: f32 = 10.0;
 const CAR_MAX_ACC: f32 = 2.0;
-const CAR_MAX_DEC:f32 = 2.0;
+const CAR_MAX_DEC: f32 = 2.0;
 
 impl Racetrack {
-
     /// Parses a `Racetrack` description from a string
     pub fn from_str(input: &str) -> Result<Self, String> {
         let init_grid = InitialGrid::from_str(input)?;
@@ -334,7 +326,7 @@ impl Racetrack {
             speed: 0_f32,
             max_speed: CAR_MAX_SPEED,
             max_acc: CAR_MAX_ACC,
-            max_dec: CAR_MAX_DEC
+            max_dec: CAR_MAX_DEC,
         };
 
         let width = initial_grid.width;
@@ -631,5 +623,14 @@ impl Racetrack {
             finish_line,
             tile_size,
         })
+    }
+
+    /// Produces a reference to the tile containing the given point
+    ///
+    /// ## Panics
+    ///
+    /// Panics if the point is outside the range of the bounds of the racetrack
+    pub fn get_tile(&self, p: Point) -> &GridTile {
+        &self.grid[p.y as usize][p.x as usize]
     }
 }
