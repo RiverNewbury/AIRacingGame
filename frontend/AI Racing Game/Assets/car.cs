@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 // For multithreading
@@ -35,12 +36,14 @@ public class car : MonoBehaviour
 	// Function for the thread, listens for packets from the server
 	private void ReceiveData()
 	{
-		//try {
+		try {
 			client = new UdpClient(port);
 			while (Thread.CurrentThread.IsAlive) {
-				
+				var endPoint = new IPEndPoint(IPAddress.Any, 0);//receive from any IP address
+				var data = client.Receive(ref endPoint);
+				Debug.Log(data);
 			}
-		//} catch (exception e) { }
+		} catch (Exception e) { }
 	}
 
 	public void OnApplicationQuit()
