@@ -16,6 +16,7 @@ public class car : MonoBehaviour
 	UdpClient client;
 
 	public int port = 59827; // picked randomly by Luca from a port range outside of those that can be registered with IANA
+	public int bufferSize = 256;
 
 	// Start is called before the first frame update
 	void Start()
@@ -40,8 +41,11 @@ public class car : MonoBehaviour
 			client = new UdpClient(port);
 			while (Thread.CurrentThread.IsAlive) {
 				var endPoint = new IPEndPoint(IPAddress.Any, 0);//receive from any IP address
-				var data = client.Receive(ref endPoint);
-				Debug.Log(data);
+				Byte[] data = client.Receive(ref endPoint);
+
+				for (int i = 0; i < bufferSize; i++) {
+					Debug.Log(data[i]);
+				}
 			}
 		} catch (Exception e) { }
 	}

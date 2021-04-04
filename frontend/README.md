@@ -1,5 +1,11 @@
 # Frontend
 
+## Info
+- The directory named 'AI Racing Game' here is the unity project for the frontend
+- 'test' is a directory for code to simulate the server. Luca is attempting some rust code to test out the UDP receiver loop
+- Ports for UDP are 59827 (clientside) and 59828 (serverside)
+- The standard size of a buffer right now is 256, this is arbitary and can be changed as it likely will need to be.
+
 ## To do
 - menu scene to enter login type details
 	* make text boxes comfy on every screen :)
