@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ public class sendCode : MonoBehaviour
 {
 	public InputField codeField;
 	public InputField usernameField;
-	public String serverAddress;
+	public string serverAddress;
 
 
 	// Start is called before the first frame update
@@ -33,7 +34,6 @@ public class sendCode : MonoBehaviour
 		form.AddField("code", codeField.text);
 
 		UnityWebRequest www = UnityWebRequest.Post(serverAddress, form);
-		yield return www.SendWebRequest();
 
 		if (www.result != UnityWebRequest.Result.Success) {
 			Debug.Log(www.error);
@@ -41,5 +41,6 @@ public class sendCode : MonoBehaviour
 		else {
 			Debug.Log("Form upload complete!");
 		}
+			SceneManager.LoadScene(sceneName:"simulation");
 	}
 }
