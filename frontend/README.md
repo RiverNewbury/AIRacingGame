@@ -30,4 +30,5 @@
 ## First Iteration
 - no login, just take name
 - submits name and script to server
-- car just represented very basically (eg. percentage, line)
+- ~~car just represented very basically (eg. percentage, line)~~
+- car represented by dot around bitmap
