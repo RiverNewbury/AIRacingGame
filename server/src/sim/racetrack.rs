@@ -107,7 +107,8 @@ pub const CAR_LENGTH: f32 = 1.0;
 pub const CAR_WIDTH: f32 = 0.3;
 
 /// All of the information about the car at a particular point in time
-#[derive(Copy, Clone, Serialize)]
+// TODO - added debug for ex result
+#[derive(Copy, Clone, Serialize, Debug)]
 pub struct Car {
     /// The position of the car
     pub pos: Point,

@@ -4,7 +4,8 @@ use serde::Serialize;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
-#[derive(Copy, Clone, Serialize)]
+// TODO - added debug for ex result
+#[derive(Copy, Clone, Serialize, Debug)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
