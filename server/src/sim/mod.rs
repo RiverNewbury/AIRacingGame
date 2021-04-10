@@ -72,16 +72,16 @@ impl Simulation {
     }
 
     //TODO: Add f to car to define the max acc depending on current speed
-    fn speed_after_tick(&self, starting_speed: f32, acc: f32, final_speed: f32) -> f32 {
+    fn speed_after_tick(&self, starting_speed: f32, acc: f32) -> f32 {
         let car = self.car;
         let actual_acc = acc * car.max_acc;
 
-        (car.speed + actual_acc).max(car.max_speed).max(final_speed)
+        (car.speed + actual_acc).max(car.max_speed)
     }
 
     //TODO: Don't let them turn at any speed per tick like a god damn owl
-    fn angle_after_tick(&self, starting_angle: f32, turning_speed: f32, final_angle: f32) -> f32 {
-        (starting_angle + turning_speed).max(final_angle)
+    fn angle_after_tick(&self, starting_angle: f32, turning_speed: f32) -> f32 {
+        (starting_angle + turning_speed)
     }
 
     // TODO -
@@ -167,9 +167,9 @@ impl Simulation {
 
             let tick_start_pos = self.car.pos;
 
-            self.car.speed = self.speed_after_tick(self.car.speed, action.acc, action.final_speed);
+            self.car.speed = self.speed_after_tick(self.car.speed, action.acc);
             self.car.angle =
-                self.angle_after_tick(self.car.angle, action.turning_speed, action.final_angle);
+                self.angle_after_tick(self.car.angle, action.turning_speed);
 
             // TODO - Check I've got this the right way around
             // ^ Checked by @sharnoff - looks good
