@@ -25,8 +25,8 @@ pub struct Simulation {
 }
 
 //TODO - Made field public for score + sim hist pub for ex result
-
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+// TODO - added debug for ex result
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Debug)]
 pub struct Score {
     pub successful: bool,
     pub time: i32, // In terms of ticks

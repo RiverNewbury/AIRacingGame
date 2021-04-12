@@ -34,7 +34,7 @@ lazy_static! {
 type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 
 #[get("/run/<username>", data = "<source_code>")]
-fn exec_user_code(username: String, source_code: String) -> RequestResult<SimulationHistory> {
+fn exec_user_code(username: String, source_code: String) -> RequestResult<(SimulationHistory, Score)> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
     //Not able to be parallel with just 1 as id
     //TODO - Get lazy static working rather than defing again
@@ -49,18 +49,18 @@ fn exec_user_code(username: String, source_code: String) -> RequestResult<Simula
         .expect("leaderboard mutex already poisoned!")
         .add(username, source_code, score);
 
-    Ok(Json(history))
+    Ok(Json((history, score)))
 }
 
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
-//    ex_result()
+    ex_result()
 
 
-    rocket::ignite()
-        .mount("/", routes![exec_user_code])
-        .launch();
+//    rocket::ignite()
+//        .mount("/", routes![exec_user_code])
+//        .launch();
 }
 
 fn ex_result() {
@@ -99,7 +99,7 @@ fn ex_result() {
         tps: 100,
     };
 
-    let a = Json(h);
+    let a = Json((h,s));
 
     print!("{:?}", a)
 }
