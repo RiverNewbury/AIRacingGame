@@ -28,19 +28,20 @@ public class sendCode : MonoBehaviour
 
 	public void SendCode()
 	{
-		// Modified from example code at docs.unity3d.com/Manual/UnityWebRequest-SendingForm.html
 		WWWForm form = new WWWForm();
 		form.AddField("username", usernameField.text);
-		form.AddField("code", codeField.text);
+		form.AddField("source_code", codeField.text);
 
-		UnityWebRequest www = UnityWebRequest.Post(serverAddress, form);
+		UnityWebRequest postRequest = UnityWebRequest.Post(serverAddress, form);
+		postRequest.SendWebRequest();
 
-		if (www.result != UnityWebRequest.Result.Success) {
-			Debug.Log(www.error);
+		if (postRequest.result != UnityWebRequest.Result.Success) {
+			Debug.Log(postRequest.error);
 		}
 		else {
 			Debug.Log("Form upload complete!");
 		}
-			SceneManager.LoadScene(sceneName:"simulation");
+
+		SceneManager.LoadScene(sceneName:"simulation");
 	}
 }

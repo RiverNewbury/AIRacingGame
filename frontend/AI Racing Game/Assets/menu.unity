@@ -271,6 +271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   codeField: {fileID: 735975166}
   usernameField: {fileID: 940443359}
+  serverAddress: 127.0.0.1
 --- !u!1 &251402596
 GameObject:
   m_ObjectHideFlags: 0
