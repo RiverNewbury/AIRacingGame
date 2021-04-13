@@ -37,8 +37,7 @@ public class sendCode : MonoBehaviour
 
 		if (postRequest.result != UnityWebRequest.Result.Success) {
 			Debug.Log(postRequest.error);
-		}
-		else {
+		} else {
 			Debug.Log("Form upload complete!");
 		}
 
