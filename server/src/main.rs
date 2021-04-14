@@ -10,7 +10,7 @@
 
 use lazy_static::lazy_static;
 use rocket::response::status::BadRequest;
-use rocket::{get, routes};
+use rocket::{post, routes};
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 
@@ -33,7 +33,7 @@ lazy_static! {
 
 type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 
-#[get("/run/<username>", data = "<source_code>")]
+#[post("/run/<username>", data = "<source_code>")]
 fn exec_user_code(
     username: String,
     source_code: String,
@@ -59,11 +59,11 @@ fn exec_user_code(
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
-    ex_result()
+    // ex_result()
 
-    //    rocket::ignite()
-    //        .mount("/", routes![exec_user_code])
-    //        .launch();
+    rocket::ignite()
+        .mount("/", routes![exec_user_code])
+        .launch();
 }
 
 fn ex_result() {
