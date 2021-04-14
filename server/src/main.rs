@@ -39,11 +39,9 @@ fn exec_user_code(
     source_code: String,
 ) -> RequestResult<(SimulationHistory, Score)> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
+
     //Not able to be parallel with just 1 as id
-    //TODO - Get lazy static working rather than defing again
-    let r: Racetrack = Racetrack::from_str(include_str!("default-racetrack.rtk"))
-        .expect("default racetrack is wrong");
-    let (score, history) = (Simulation::new(1, code, r))
+    let (score, history) = (Simulation::new(1, code, &RACETRACK))
         .simulate()
         .map_err(|e| BadRequest(Some(e)))?;
 

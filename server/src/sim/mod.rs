@@ -20,7 +20,7 @@ const NUMBER_CHECKS: i32 = 10;
 pub struct Simulation {
     id: usize, //For keeping track of which call should be returned to who
     code: Code,
-    track: Racetrack,
+    track: &'static Racetrack,
     car: Car,
 }
 
@@ -203,7 +203,7 @@ impl Simulation {
         Ok((score, hist))
     }
 
-    pub fn new(id: usize, code: Code, track: Racetrack) -> Self {
+    pub fn new(id: usize, code: Code, track: &'static Racetrack) -> Self {
         let car = track.initial_car_state;
 
         Simulation {
