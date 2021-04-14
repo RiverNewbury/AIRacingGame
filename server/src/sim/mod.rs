@@ -18,7 +18,6 @@ const NUMBER_CHECKS: i32 = 10;
 // Almost all the computation will be done in the Simulation Object
 
 pub struct Simulation {
-    id: usize, //For keeping track of which call should be returned to who
     code: Code,
     track: &'static Racetrack,
     car: Car,
@@ -203,11 +202,10 @@ impl Simulation {
         Ok((score, hist))
     }
 
-    pub fn new(id: usize, code: Code, track: &'static Racetrack) -> Self {
+    pub fn new(code: Code, track: &'static Racetrack) -> Self {
         let car = track.initial_car_state;
 
         Simulation {
-            id,
             code,
             track,
             car,

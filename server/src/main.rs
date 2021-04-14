@@ -40,8 +40,7 @@ fn exec_user_code(
 ) -> RequestResult<(SimulationHistory, Score)> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
 
-    //Not able to be parallel with just 1 as id
-    let (score, history) = (Simulation::new(1, code, &RACETRACK))
+    let (score, history) = (Simulation::new(code, &RACETRACK))
         .simulate()
         .map_err(|e| BadRequest(Some(e)))?;
 
