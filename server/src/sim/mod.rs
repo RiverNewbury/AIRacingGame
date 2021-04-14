@@ -171,8 +171,7 @@ impl Simulation {
             let tick_start_pos = self.car.pos;
 
             self.car.speed = self.speed_after_tick(self.car.speed, action.acc);
-            self.car.angle =
-                self.angle_after_tick(self.car.angle, action.turning_speed);
+            self.car.angle = self.angle_after_tick(self.car.angle, action.turning_speed);
 
             // TODO - Check I've got this the right way around
             // ^ Checked by @sharnoff - looks good

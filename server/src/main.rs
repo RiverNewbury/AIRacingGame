@@ -23,7 +23,7 @@ use leaderboard::Leaderboard;
 use sim::{Racetrack, Simulation, SimulationHistory};
 
 //For exResults
-use sim::{Point, Score, Car};
+use sim::{Car, Point, Score};
 
 lazy_static! {
     static ref LEADERBOARD: Mutex<Leaderboard> = Mutex::new(Leaderboard::new());
@@ -34,11 +34,15 @@ lazy_static! {
 type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 
 #[get("/run/<username>", data = "<source_code>")]
-fn exec_user_code(username: String, source_code: String) -> RequestResult<(SimulationHistory, Score)> {
+fn exec_user_code(
+    username: String,
+    source_code: String,
+) -> RequestResult<(SimulationHistory, Score)> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
     //Not able to be parallel with just 1 as id
     //TODO - Get lazy static working rather than defing again
-    let r: Racetrack = Racetrack::from_str(include_str!("default-racetrack.rtk")).expect("default racetrack is wrong");
+    let r: Racetrack = Racetrack::from_str(include_str!("default-racetrack.rtk"))
+        .expect("default racetrack is wrong");
     let (score, history) = (Simulation::new(1, code, r))
         .simulate()
         .map_err(|e| BadRequest(Some(e)))?;
@@ -57,20 +61,19 @@ fn main() {
     lazy_static::initialize(&LEADERBOARD);
     ex_result()
 
-
-//    rocket::ignite()
-//        .mount("/", routes![exec_user_code])
-//        .launch();
+    //    rocket::ignite()
+    //        .mount("/", routes![exec_user_code])
+    //        .launch();
 }
 
 fn ex_result() {
     let s = Score {
         successful: true,
-        time : 129,
+        time: 129,
     };
 
     let base_car = Car {
-        pos: Point{x:1.0,y:1.0},
+        pos: Point { x: 1.0, y: 1.0 },
         angle: 0.0,
         speed: 0.0,
         max_speed: 1.0,
@@ -81,16 +84,14 @@ fn ex_result() {
     let h = SimulationHistory {
         history: vec![
             base_car,
-
             Car {
-                pos: Point{x:1.5, y:1.5},
+                pos: Point { x: 1.5, y: 1.5 },
                 angle: 45.0,
                 speed: 3.0,
                 ..base_car
             },
-
             Car {
-                pos: Point{x:3.5, y:3.5},
+                pos: Point { x: 3.5, y: 3.5 },
                 angle: 90.0,
                 speed: 12.0,
                 ..base_car
@@ -99,7 +100,7 @@ fn ex_result() {
         tps: 100,
     };
 
-    let a = Json((h,s));
+    let a = Json((h, s));
 
     print!("{:?}", a)
 }
