@@ -47,14 +47,34 @@ impl Simulation {
     // TODO - shouldn't need to know where you started and finished - not very clever
     // Currently literally only checks that the car is going at a positive speed and is on the finish line
     // Currently doesn't check starting possition as that'd probably mean that as soon as the car moves it'd have finished
-    fn passed_finish_line(&self, start: Point, end: Point) -> bool {
+    fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;
 
         let intersection = Simulation::intersection_of_2_lines(start, end, p1, p2);
 
+        //TODO : If p2.x = p1.x then it breaks FIX
+        let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x)/ (p2.x - p1.x);
+        //Tells you if coming from the correct direction
+        // TODO : may break if doesn't start at 0 angle
+        let correct_direction = ycheck>= start.y;
+
         match intersection {
             None => false,
-            Some(p) => Simulation::between_2_points(p1,p2, p) && Simulation::between_2_points(start, end, p)
+            Some(p) => {
+                if Simulation::between_2_points(p1,p2, p) && Simulation::between_2_points(start, end, p){
+                    if correct_direction && !self.backed_through_finishline{
+                        true
+                    } else if correct_direction {
+                        self.backed_through_finishline = false;
+                        false
+                    } else {
+                        self.backed_through_finishline = true;
+                        false
+                    }
+                } else {
+                    false
+                }
+            },
         }
     }
 
@@ -81,7 +101,7 @@ impl Simulation {
 
         let det = a1*b2 - a2*b1;
 
-        if (det.abs() <= 0.00000001) {
+        if det.abs() <= 0.00000001 {
             None
         } else {
             let x = (b2*c1 - b1*c2)/det;
