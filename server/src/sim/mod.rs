@@ -21,6 +21,7 @@ pub struct Simulation {
     code: Code,
     track: &'static Racetrack,
     car: Car,
+    backed_through_finishline: bool,
 }
 
 //TODO - Made field public for score + sim hist pub for ex result
@@ -47,16 +48,46 @@ impl Simulation {
     // Currently literally only checks that the car is going at a positive speed and is on the finish line
     // Currently doesn't check starting possition as that'd probably mean that as soon as the car moves it'd have finished
     fn passed_finish_line(&self, start: Point, end: Point) -> bool {
-        let mut point_checking = start;
-        let delta = (end - start) / (NUMBER_CHECKS as f32);
+        let (p1, p2) = self.track.finish_line;
 
-        for i in 0..NUMBER_CHECKS {
-            point_checking += delta;
-            if self.am_on_finish_line(point_checking) && self.car.speed > 0.0 {
-                return true;
-            }
+        let intersection = Simulation::intersection_of_2_lines(start, end, p1, p2);
+
+        match intersection {
+            None => false,
+            Some(p) => Simulation::between_2_points(p1,p2, p) && Simulation::between_2_points(start, end, p)
         }
-        false
+    }
+
+    fn between_2_points(p1:Point, p2: Point, point_2_compare: Point) -> bool {
+        let xbetween = p1.x >= point_2_compare.x && p2.x <= point_2_compare.x
+                    || p1.x <= point_2_compare.x && p2.x >= point_2_compare.x;
+
+        let ybetween = p1.y >= point_2_compare.y && p2.y <= point_2_compare.y
+                    || p1.y <= point_2_compare.y && p2.y >= point_2_compare.y;
+
+        xbetween && ybetween
+    }
+
+    fn intersection_of_2_lines(s1: Point, e1: Point, s2:Point, e2:Point) -> Option<Point> {
+        // Line s1 e1 represented a1x + b1y = c1
+        let a1 = s1.y - e1.y;
+        let b1 = s1.x - e1.x;
+        let c1 = a1*s1.x + b1*s1.y;
+
+        // Line s2 e2 represented as a2x + b2y = c2
+        let a2 = s2.y - e2.y;
+        let b2 = s2.x - e2.x;
+        let c2 = a2*s2.x + b2*s2.y;
+
+        let det = a1*b2 - a2*b1;
+
+        if (det.abs() <= 0.00000001) {
+            None
+        } else {
+            let x = (b2*c1 - b1*c2)/det;
+            let y = (a1*c2 - a2*c1)/det;
+            Some(Point{x, y})
+        }
     }
 
     // TODO - make more intelligent decisions about when the car should die
@@ -209,6 +240,7 @@ impl Simulation {
             code,
             track,
             car,
+            backed_through_finishline: false,
         }
     }
 }
