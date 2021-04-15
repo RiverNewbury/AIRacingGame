@@ -44,9 +44,9 @@ impl Simulation {
         todo!()
     }
 
-    // TODO - shouldn't need to know where you started and finished - not very clever
-    // Currently literally only checks that the car is going at a positive speed and is on the finish line
-    // Currently doesn't check starting possition as that'd probably mean that as soon as the car moves it'd have finished
+    // Checks the car goes over the finishline the correct direction 2 times if it goes backwards
+    //   over the finish line and one time o/w
+    // TODO - Probably doesn't work at the beginning of the simulation as it starts on the finish line
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;
 
@@ -54,6 +54,7 @@ impl Simulation {
 
         //TODO : If p2.x = p1.x then it breaks FIX
         let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x)/ (p2.x - p1.x);
+
         //Tells you if coming from the correct direction
         // TODO : may break if doesn't start at 0 angle
         let correct_direction = ycheck>= start.y;
@@ -137,8 +138,7 @@ impl Simulation {
         (starting_angle + turning_speed)
     }
 
-    // TODO -
-    //  In_bounds and am_on_finish_line could be combined
+    // TODO - Probably should use more advanced line system
     fn in_bounds(&self, point: Point) -> bool {
         let square = self.track.grid[point.x as usize][point.y as usize];
         match square {
@@ -175,26 +175,6 @@ impl Simulation {
                 });
 
                 on_inside
-            }
-        }
-    }
-
-    fn am_on_finish_line(&self, p: Point) -> bool {
-        let square = self.track.get_tile(p);
-        match square {
-            GridTile::Outside => false,
-            GridTile::Inside {
-                contains_finish_line,
-            } => *contains_finish_line,
-            GridTile::Border {
-                contains_finish_line,
-                ..
-            } => {
-                if *contains_finish_line && self.in_bounds(p) {
-                    true
-                } else {
-                    false
-                }
             }
         }
     }
@@ -254,12 +234,10 @@ impl Simulation {
     }
 
     pub fn new(code: Code, track: &'static Racetrack) -> Self {
-        let car = track.initial_car_state;
-
         Simulation {
             code,
             track,
-            car,
+            car: track.initial_car_state,
             backed_through_finishline: false,
         }
     }
