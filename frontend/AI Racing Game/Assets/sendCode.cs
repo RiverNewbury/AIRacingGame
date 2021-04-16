@@ -29,10 +29,9 @@ public class sendCode : MonoBehaviour
 	public void SendCode()
 	{
 		WWWForm form = new WWWForm();
-		form.AddField("username", usernameField.text);
 		form.AddField("source_code", codeField.text);
 
-		UnityWebRequest postRequest = UnityWebRequest.Post(serverAddress, form);
+		UnityWebRequest postRequest = UnityWebRequest.Post(serverAddress + ":8000/run/" + usernameField.text, form);
 		postRequest.SendWebRequest();
 
 		if (postRequest.result != UnityWebRequest.Result.Success) {
