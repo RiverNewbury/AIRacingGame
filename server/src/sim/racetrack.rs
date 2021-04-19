@@ -120,12 +120,31 @@ pub struct Car {
     /// The maximum speed of the car in units per tick
     #[serde(skip)]
     pub max_speed: f32,
-    /// The maximum acceleration of the car
+//    /// The maximum acceleration of the car
+//    #[serde(skip)]
+//    pub max_acc: f32,
+//    /// The maximum deceleration of the car
+//    #[serde(skip)]
+//    pub max_dec: f32,
+    // The maximum turning speed of the car in degrees per tick
     #[serde(skip)]
-    pub max_acc: f32,
-    /// The maximum deceleration of the car
-    #[serde(skip)]
-    pub max_dec: f32,
+    pub max_turn: f32,
+}
+
+// Arbitrary variables
+const CAR_MAX_SPEED: f32 = 10.0;
+const CAR_MAX_ACC: f32 = 2.0;
+const CAR_MAX_DEC: f32 = 2.0;
+const CAR_MAX_TURNING_SPEED: f32 = 10.0
+
+impl Car {
+    pub fn max_acc(&self) {
+        (1.0 - self.speed/self.max_speed )*CAR_MAX_ACC
+    }
+
+    pub fn max_dec(&self) {
+        (self.speed/self.max_speed )*CAR_MAX_DEC
+    }
 }
 
 // Characters that represent the bounds of the racetrack
@@ -287,11 +306,6 @@ impl InitialGrid {
     }
 }
 
-// Arbitrary variables
-const CAR_MAX_SPEED: f32 = 10.0;
-const CAR_MAX_ACC: f32 = 2.0;
-const CAR_MAX_DEC: f32 = 2.0;
-
 impl Racetrack {
     /// Parses a `Racetrack` description from a string
     pub fn from_str(input: &str) -> Result<Self, String> {
@@ -328,6 +342,7 @@ impl Racetrack {
             max_speed: CAR_MAX_SPEED,
             max_acc: CAR_MAX_ACC,
             max_dec: CAR_MAX_DEC,
+            max_turn: CAR_MAX_TURNING_SPEED,
         };
 
         let width = initial_grid.width;
