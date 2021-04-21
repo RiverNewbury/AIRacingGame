@@ -56,7 +56,7 @@ fn exec_user_code(
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
-    // ex_result()
+    ex_result();
 
     rocket::ignite()
         .mount("/", routes![exec_user_code])
@@ -74,8 +74,7 @@ fn ex_result() {
         angle: 0.0,
         speed: 0.0,
         max_speed: 1.0,
-        max_acc: 1.0,
-        max_dec: 1.0,
+        max_turn: 1.0,
     };
 
     let h = SimulationHistory {

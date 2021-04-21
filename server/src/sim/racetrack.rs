@@ -135,14 +135,14 @@ pub struct Car {
 const CAR_MAX_SPEED: f32 = 10.0;
 const CAR_MAX_ACC: f32 = 2.0;
 const CAR_MAX_DEC: f32 = 2.0;
-const CAR_MAX_TURNING_SPEED: f32 = 10.0
+const CAR_MAX_TURNING_SPEED: f32 = 10.0;
 
 impl Car {
-    pub fn max_acc(&self) {
+    pub fn max_acc(&self) -> f32 {
         (1.0 - self.speed/self.max_speed )*CAR_MAX_ACC
     }
 
-    pub fn max_dec(&self) {
+    pub fn max_dec(&self) -> f32{
         (self.speed/self.max_speed )*CAR_MAX_DEC
     }
 }
@@ -340,8 +340,6 @@ impl Racetrack {
             // probably doesn't need to be
             speed: 0_f32,
             max_speed: CAR_MAX_SPEED,
-            max_acc: CAR_MAX_ACC,
-            max_dec: CAR_MAX_DEC,
             max_turn: CAR_MAX_TURNING_SPEED,
         };
 
