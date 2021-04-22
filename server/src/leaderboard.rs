@@ -15,6 +15,14 @@ struct RankedSource {
     source: String,
 }
 
+// The entry corresponding to a single run in the leaderboard. This is essentially just what we're
+// storing in the leaderboard, minus the source code.
+#[derive(serde::Serialize)]
+pub struct LeaderboardEntry {
+    username: String,
+    score: Score,
+}
+
 impl PartialEq for RankedSource {
     fn eq(&self, other: &Self) -> bool {
         self.cmp(other) == Ordering::Equal
@@ -50,5 +58,17 @@ impl Leaderboard {
             score,
             source: code,
         });
+    }
+
+    // Produces an iterator over the top `n` entries in the leaderboard
+    pub fn top_n(&self, n: usize) -> impl '_ + Iterator<Item = LeaderboardEntry> {
+        self.rankings
+            .iter()
+            .rev()
+            .take(n)
+            .map(|e| LeaderboardEntry {
+                username: e.username.clone(),
+                score: e.score.clone(),
+            })
     }
 }

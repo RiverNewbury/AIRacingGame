@@ -4,13 +4,13 @@
 //! * Receiving & executing user scripts;
 //! * Simulating the car's run around a racetrack;
 //! * Sending back the full race & time; and
-//! * Displaying the leaderboad upon request
+//! * Displaying the leaderboard upon request
 
 #![feature(decl_macro)]
 
 use lazy_static::lazy_static;
 use rocket::response::status::BadRequest;
-use rocket::{post, routes};
+use rocket::{get, post, routes};
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 
@@ -19,7 +19,7 @@ mod leaderboard;
 mod sim;
 
 use code::Code;
-use leaderboard::Leaderboard;
+use leaderboard::{Leaderboard, LeaderboardEntry};
 use sim::{Racetrack, Simulation, SimulationHistory};
 
 //For exResults
@@ -53,13 +53,22 @@ fn exec_user_code(
     Ok(Json((history, score)))
 }
 
+#[get("/leaderboard/<n>")]
+fn get_leaderboard(n: usize) -> RequestResult<Vec<LeaderboardEntry>> {
+    let lb_guard = LEADERBOARD.lock().unwrap();
+    let entries: Vec<_> = lb_guard.top_n(n).collect();
+    drop(lb_guard);
+
+    Ok(Json(entries))
+}
+
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
     ex_result();
 
     rocket::ignite()
-        .mount("/", routes![exec_user_code])
+        .mount("/", routes![exec_user_code, get_leaderboard])
         .launch();
 }
 
