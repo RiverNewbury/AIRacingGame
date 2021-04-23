@@ -1,6 +1,5 @@
 use crate::code::{Code, ExecEnvironment};
 use serde::Serialize;
-use std::cmp::max;
 
 mod point;
 mod racetrack;
@@ -12,8 +11,13 @@ pub use racetrack::{Car, GridTile, Racetrack};
 const TICKS_PER_SECOND: i32 = 100;
 // The number of ticks until the users code will be asked what it wants to do next
 const TICKS_PER_UPDATE: i32 = 10;
-// The number of checks along a line that the car travels to make sure it never goes out of bounds
-const NUMBER_CHECKS: i32 = 10;
+// The number of checks/ unit dist along a line that the car travels to make sure it never goes out of bounds
+const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
+// The maximum error acceptable when giving the distance to the wall to the User
+const ACCURACY_OF_DIST_TO_WALL :f32 = 0.001;
+// The number of angles to check the distance to the wall at
+// MUST - devide 360 in the ring on integers
+const NUMBER_ANGLES_TO_CHECK :usize = 60;
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -39,9 +43,52 @@ pub struct SimulationHistory {
     pub tps: i32, // Ticks per second used for this simulation
 }
 
+
+
+
 impl Simulation {
     fn make_environment(&self) -> ExecEnvironment {
-        todo!()
+        let go_dist = | start: Point, dist: f32, angle :f32|{
+            let traveled = Point {
+                x: angle.cos() * dist,
+                y: angle.sin() * dist,
+            };
+            start + traveled
+        };
+
+        let f = | angle :f32 | {
+            let mut dist_traveled = 0.0;
+            let mut precision = 1.0;
+            let mut start = self.car.pos;
+            let mut end = go_dist(start, precision, angle);
+
+            while precision > ACCURACY_OF_DIST_TO_WALL{
+                let hit = self.hit_wall(start, end);
+                if hit {
+                    dist_traveled += precision;
+                    precision *= 2.0;
+                    start = end;
+                } else {
+                    precision /= 2.0;
+                }
+                end = go_dist(start, precision, angle);
+
+            }
+
+            dist_traveled
+        };
+        let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
+        let angle_delta = 360/NUMBER_ANGLES_TO_CHECK;
+
+        for i in 0..NUMBER_ANGLES_TO_CHECK {
+            dists.push(f((i*angle_delta) as f32))
+        }
+
+
+        ExecEnvironment{
+            car_currently : self.car,
+            dist_to_wall :  dists,
+        }
     }
 
     // Checks the car goes over the finishline the correct direction 2 times if it goes backwards
@@ -114,9 +161,10 @@ impl Simulation {
     // TODO - make more intelligent decisions about when the car should die
     fn hit_wall(&self, start: Point, end: Point) -> bool {
         let mut point_checking = start;
-        let delta = (end - start) / (NUMBER_CHECKS as f32);
+        let num_checks : i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
+        let delta = (end - start) / (num_checks as f32);
 
-        for i in 0..=NUMBER_CHECKS {
+        for _i in 0..=num_checks {
             if !self.in_bounds(point_checking) {
                 return true;
             }
@@ -126,7 +174,7 @@ impl Simulation {
     }
 
     //TODO: Add f to car to define the max acc depending on current speed
-    fn speed_after_tick(&self, starting_speed: f32, acc: f32) -> f32 {
+    fn speed_after_tick(&self, acc: f32) -> f32 {
         let car = self.car;
         let actual_acc = acc * car.max_acc();
 
@@ -134,8 +182,8 @@ impl Simulation {
     }
 
     //TODO: Don't let them turn at any speed per tick like a god damn owl
-    fn angle_after_tick(&self, starting_angle: f32, turning_speed: f32) -> f32 {
-        (starting_angle + turning_speed)
+    fn angle_after_tick(&self,turning_speed: f32) -> f32 {
+        self.car.angle + turning_speed
     }
 
     // TODO - Probably should use more advanced line system
@@ -200,8 +248,8 @@ impl Simulation {
 
             let tick_start_pos = self.car.pos;
 
-            self.car.speed = self.speed_after_tick(self.car.speed, action.acc);
-            self.car.angle = self.angle_after_tick(self.car.angle, action.turning_speed);
+            self.car.speed = self.speed_after_tick(action.acc);
+            self.car.angle = self.angle_after_tick(action.turning_speed);
 
             // TODO - Check I've got this the right way around
             // ^ Checked by @sharnoff - looks good
