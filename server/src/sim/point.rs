@@ -27,6 +27,10 @@ impl Point {
             ..self
         }
     }
+    // Gives euclidean distance from point to (0,0)
+    pub fn length(&self) -> f32 {
+        ((self.x*self.x + self.y*self.y) as f32).sqrt()
+    }
 }
 
 impl Add for Point {
