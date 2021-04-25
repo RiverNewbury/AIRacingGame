@@ -9,6 +9,7 @@
 
 ## Things to Note
  - The users affect on the car happen at the start of the tick (before calculating new position)
+ - The car starts strictly behind the finishline
 
 
 ## Current assumptions

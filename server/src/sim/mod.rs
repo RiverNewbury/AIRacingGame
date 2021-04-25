@@ -5,7 +5,7 @@ mod point;
 mod racetrack;
 
 pub use point::Point;
-pub use racetrack::{Car, GridTile, Racetrack};
+pub use racetrack::{Car, GridTile, Racetrack, CAR_LENGTH, CAR_WIDTH};
 
 // A tick is the unit on which thte simulation will update the world
 const TICKS_PER_SECOND: i32 = 100;
@@ -42,9 +42,6 @@ pub struct SimulationHistory {
     pub history: Vec<Car>,
     pub tps: i32, // Ticks per second used for this simulation
 }
-
-
-
 
 impl Simulation {
     fn make_environment(&self) -> ExecEnvironment {
@@ -93,7 +90,6 @@ impl Simulation {
 
     // Checks the car goes over the finishline the correct direction 2 times if it goes backwards
     //   over the finish line and one time o/w
-    // TODO - Probably doesn't work at the beginning of the simulation as it starts on the finish line
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;
 
@@ -159,6 +155,7 @@ impl Simulation {
     }
 
     // TODO - make more intelligent decisions about when the car should die
+    // ASSUMES - that the car is thinner than 1 unit
     fn hit_wall(&self, start: Point, end: Point) -> bool {
         let mut point_checking = start;
         let num_checks : i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
@@ -173,7 +170,7 @@ impl Simulation {
         false
     }
 
-    //TODO: Add f to car to define the max acc depending on current speed
+    //TODO: Research air resistance
     fn speed_after_tick(&self, acc: f32) -> f32 {
         let car = self.car;
         let actual_acc = acc * car.max_acc();
@@ -227,7 +224,15 @@ impl Simulation {
         }
     }
 
+    // The users affect on the car happen at the start of the tick (before calculating new position)
     pub fn simulate(mut self) -> Result<(Score, SimulationHistory), String> {
+        // If Car more than 1 unit wide will break wall collision - (as only check at the corners so
+        //  in the situation below the car could drive straight over the x
+        //  +---------+
+        //  |         |   x
+        //  +---------+
+        assert!(CAR_WIDTH < 1.0);
+
         let mut hist = SimulationHistory {
             history: Vec::new(),
             tps: TICKS_PER_SECOND,
@@ -246,31 +251,35 @@ impl Simulation {
             }
             ticks += 1;
 
-            let tick_start_pos = self.car.pos;
+            let start_pos = self.car.pos_of_corners();
 
             self.car.speed = self.speed_after_tick(action.acc);
             self.car.angle = self.angle_after_tick(action.turning_speed);
 
-            // TODO - Check I've got this the right way around
-            // ^ Checked by @sharnoff - looks good
-            let traveled = Point {
-                x: self.car.angle.cos() * self.car.speed,
-                y: self.car.angle.sin() * self.car.speed,
-            };
-            self.car.pos += traveled;
+            self.car.pos += Point::new_polar(self.car.speed, self.car.angle);
 
             hist.history.push(self.car);
 
-            if self.hit_wall(tick_start_pos, self.car.pos) {
-                let score = Score {
-                    successful: false,
-                    time: ticks,
-                };
+            let end_pos = self.car.pos_of_corners();
 
-                return Ok((score, hist));
+            for (s,f) in start_pos.iter().zip(end_pos.iter()) {
+                if self.hit_wall(*s, *f) {
+                    let score = Score {
+                        successful: false,
+                        time: ticks,
+                    };
+
+                    return Ok((score, hist));
+                }
             }
 
-            passed_finish = self.passed_finish_line(tick_start_pos, self.car.pos);
+
+            for (s,f) in start_pos.iter().zip(end_pos.iter()) {
+                if self.passed_finish_line(*s, *f) {
+                    passed_finish = true
+                }
+            }
+
         }
 
         let score = Score {
@@ -286,7 +295,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state,
-            backed_through_finishline: false,
+            backed_through_finishline: true,
         }
     }
 }
