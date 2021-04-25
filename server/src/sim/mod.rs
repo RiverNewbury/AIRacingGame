@@ -25,7 +25,8 @@ pub struct Simulation {
     code: Code,
     track: &'static Racetrack,
     car: Car,
-    backed_through_finishline: bool,
+    // For i circuits to have to be done laps = 4 * i (as car has 4 corners)
+    laps: i32,
 }
 
 //TODO - Made field public for score + sim hist pub for ex result
@@ -88,8 +89,7 @@ impl Simulation {
         }
     }
 
-    // Checks the car goes over the finishline the correct direction 2 times if it goes backwards
-    //   over the finish line and one time o/w
+    // Checks the car goes over the finishline the correct number of times to finish the game
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;
 
@@ -106,13 +106,13 @@ impl Simulation {
             None => false,
             Some(p) => {
                 if Simulation::between_2_points(p1,p2, p) && Simulation::between_2_points(start, end, p){
-                    if correct_direction && !self.backed_through_finishline{
+                    if correct_direction && (self.laps == 0){
                         true
                     } else if correct_direction {
-                        self.backed_through_finishline = false;
+                        self.laps -= 1;
                         false
                     } else {
-                        self.backed_through_finishline = true;
+                        self.laps += 1;
                         false
                     }
                 } else {
@@ -295,7 +295,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state,
-            backed_through_finishline: true,
+            laps: 4*track.laps,
         }
     }
 }
