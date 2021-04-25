@@ -7,10 +7,6 @@
 //!
 //! This module doesn't perform any interaction with user-submitted code. Currently-running
 //! simulations are represented by the [`Simulation`] type, and are updated there.
-//
-// TODO: this module could maybe be re-organized. `sim` is probably not the correct namespce for
-// creating and manipulating the racetrack; `sim` probably better represents the actual physics
-// simulation built on top of the racetrack.
 
 use super::Point;
 use serde::Serialize;
@@ -46,6 +42,9 @@ pub struct Racetrack {
 
     /// The size of an individual tile
     pub tile_size: f32,
+
+    /// The number of laps of the course that need to be performed to win
+    pub laps: i32,
 }
 
 #[derive(Copy, Clone)]
@@ -105,6 +104,8 @@ impl GridTile {
 pub const CAR_LENGTH: f32 = 1.0;
 /// The width of the car
 pub const CAR_WIDTH: f32 = 0.3;
+/// The number of laps of the course required
+pub const NUM_LAPS: i32 = 1;
 
 /// All of the information about the car at a particular point in time
 // TODO - added debug for ex result
@@ -360,6 +361,7 @@ impl Racetrack {
 
         let width = initial_grid.width;
         let height = initial_grid.rows.len();
+        let laps = NUM_LAPS;
 
         // It turns out to be useful to have some way of referring to directions. We'll use this at
         // a couple points later.
@@ -651,6 +653,7 @@ impl Racetrack {
             initial_car_state,
             finish_line,
             tile_size,
+            laps,
         })
     }
 
