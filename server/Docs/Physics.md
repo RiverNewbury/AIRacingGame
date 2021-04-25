@@ -10,6 +10,8 @@
 ## Things to Note
  - The users affect on the car happen at the start of the tick (before calculating new position)
  - The car starts strictly behind the finishline
+ - The car goes round the track anticlockwise
+ - The car always starts pointing down
 
 
 ## Current assumptions

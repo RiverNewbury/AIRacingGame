@@ -351,7 +351,7 @@ impl Racetrack {
             pos: start_car_pos,
             // Currently, the car will always start pointing upwards. This could be something we'd
             // like to configure in the future, but it's not necessary yet.
-            angle: 0_f32,
+            angle: 180_f32,
             // The car always starts at a standstill - another thing that could be changed but
             // probably doesn't need to be
             speed: 0_f32,

@@ -99,8 +99,8 @@ impl Simulation {
         let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x)/ (p2.x - p1.x);
 
         //Tells you if coming from the correct direction
-        // TODO : may break if doesn't start at 0 angle
-        let correct_direction = ycheck>= start.y;
+        // TODO : may break if doesn't start at 180 angle
+        let correct_direction = ycheck <= start.y;
 
         match intersection {
             None => false,
