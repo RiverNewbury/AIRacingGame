@@ -40,7 +40,7 @@ public class sendCode : MonoBehaviour
 			Debug.Log("Post request successful");
 
 			infoObject.ParseHistory(postRequest.downloadHandler.text);
-			SceneManager.LoadScene(sceneName:"simulation");
+			SceneManager.LoadScene(sceneName:"CarSimulation");
 		}
 	}
 }
