@@ -44,6 +44,12 @@ pub struct SimulationHistory {
     pub tps: i32, // Ticks per second used for this simulation
 }
 
+#[derive(Serialize, Debug)]
+pub struct SimulationData {
+    pub history : SimulationHistory,
+    pub score : Score,
+}
+
 impl Simulation {
     fn make_environment(&self) -> ExecEnvironment {
         let go_dist = | start: Point, dist: f32, angle :f32|{

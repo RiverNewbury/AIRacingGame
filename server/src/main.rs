@@ -20,7 +20,7 @@ mod sim;
 
 use code::Code;
 use leaderboard::{Leaderboard, LeaderboardEntry};
-use sim::{Racetrack, Simulation, SimulationHistory};
+use sim::{Racetrack, Simulation, SimulationHistory, SimulationData};
 
 //For exResults
 use sim::{Car, Point, Score};
@@ -37,7 +37,7 @@ type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 fn exec_user_code(
     username: String,
     source_code: String,
-) -> RequestResult<(SimulationHistory, Score)> {
+) -> RequestResult<SimulationData> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
 
     let (score, history) = (Simulation::new(code, &RACETRACK))
@@ -50,7 +50,7 @@ fn exec_user_code(
         .expect("leaderboard mutex already poisoned!")
         .add(username, source_code, score);
 
-    Ok(Json((history, score)))
+    Ok(Json(SimulationData { history: history, score: score }))
 }
 
 #[get("/leaderboard/<n>")]

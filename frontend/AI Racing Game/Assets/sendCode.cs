@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System;
+using System.Numerics;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-
 
 public class sendCode : MonoBehaviour
 {
@@ -34,12 +35,14 @@ public class sendCode : MonoBehaviour
 		UnityWebRequest postRequest = UnityWebRequest.Post(serverAddress + ":8000/run/" + usernameField.text, form);
 		postRequest.SendWebRequest();
 
-		if (postRequest.result != UnityWebRequest.Result.Success) {
+		//if (postRequest.result != UnityWebRequest.Result.Success) {
 			Debug.Log(postRequest.error);
-		} else {
+		//} else {
 			Debug.Log("Form upload complete!");
-		}
 
-		SceneManager.LoadScene(sceneName:"simulation");
+			Debug.Log(postRequest.downloadHandler.text);
+			InfoObject.ParseHistory(postRequest.downloadHandler.text);
+			SceneManager.LoadScene(sceneName:"simulation");
+		//}
 	}
 }
