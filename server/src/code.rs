@@ -7,11 +7,10 @@
 //!   user code to handle that
 //! * User code is not restricted in what it does; filesystem access, for example, is allowed
 
-use pyo3::prelude::FromPyObject;
+use pyo3::prelude::{pyclass, FromPyObject, Py, Python};
 use pyo3::types::PyDict;
-use pyo3::Python;
 
-pub use crate::sim::{Point,Car};
+pub use crate::sim::{Car, Point};
 
 // TODO: This module is currently a skeleton, yet to be implemented
 
@@ -32,12 +31,13 @@ pub struct Output {
 /// The execution environment for user-submitted code, providing information about the state of the
 /// car in its race
 // TODO - Consider if this is actually what we want
+#[pyclass]
+#[derive(Clone)]
 pub struct ExecEnvironment {
-    pub car_currently : Car, // Gives current information about the car
-    pub dist_to_wall : Vec<f32> // Gives you the distance to the wall at regular intervals of angle starting from 0
-    // IE if there were 2 elements that'd mean one at 0 deg and one at 180 deg
+    pub car_currently: Car, // Gives current information about the car
+    pub dist_to_wall: Vec<f32>, // Gives you the distance to the wall at regular intervals of angle starting from 0
+                                // IE if there were 2 elements that'd mean one at 0 deg and one at 180 deg
 }
-
 
 impl Code {
     /// Parses the user's code, returning any error as a string if there was one
@@ -49,9 +49,7 @@ def __user_main(env):
 
     return outputs(env)
 
-# TODO: properly set environment
-# res = __user_main(__env)
-res = __user_main(None)
+res = __user_main(__env)
 "#,
             input,
         };
@@ -67,7 +65,10 @@ res = __user_main(None)
 
         let locals = PyDict::new(py);
         // TODO: Set the environment
-        // locals.set_item("__env", env);
+        let env_obj = Py::new(py, env.clone()).map_err(|e| e.to_string())?;
+        locals
+            .set_item("__env", env_obj)
+            .map_err(|e| e.to_string())?;
 
         // The result from `Python::run` is a PyResult<()> -- the actual user output is instead
         // given by the `res` entry in `locals`.
