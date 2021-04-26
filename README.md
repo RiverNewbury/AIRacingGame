@@ -38,7 +38,9 @@
 
 
  - Beth
-  - Get initial implementation of leader board done
+  - <del>Get initial implementation of leader board done</del>
+  - Add in scene transitions
+  - Add in way of visualising lap finish/crash
   - Work out how the FE wants to receive the racetrack
 
  - Max
