@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AIRacing.Utils;
+//using AIRacing.Utils;
 
 public class MovingWithWaypoints : MonoBehaviour
 {
@@ -136,7 +136,7 @@ public class MovingWithWaypoints : MonoBehaviour
         if (current >= swpl)
         {
                 if (crashed){
-                    entryTransform.Find("circle").GetComponent<Image>().color = UtilsClass.GetColorFromString("B76F56");
+                    //entryTransform.Find("circle").GetComponent<Image>().color = UtilsClass.GetColorFromString("B76F56");
                 }
                 else{
                     //show time

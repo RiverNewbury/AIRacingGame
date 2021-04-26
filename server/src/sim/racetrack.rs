@@ -7,10 +7,6 @@
 //!
 //! This module doesn't perform any interaction with user-submitted code. Currently-running
 //! simulations are represented by the [`Simulation`] type, and are updated there.
-//
-// TODO: this module could maybe be re-organized. `sim` is probably not the correct namespce for
-// creating and manipulating the racetrack; `sim` probably better represents the actual physics
-// simulation built on top of the racetrack.
 
 use super::Point;
 use serde::Serialize;
@@ -46,6 +42,9 @@ pub struct Racetrack {
 
     /// The size of an individual tile
     pub tile_size: f32,
+
+    /// The number of laps of the course that need to be performed to win
+    pub laps: i32,
 }
 
 #[derive(Copy, Clone)]
@@ -105,6 +104,8 @@ impl GridTile {
 pub const CAR_LENGTH: f32 = 1.0;
 /// The width of the car
 pub const CAR_WIDTH: f32 = 0.3;
+/// The number of laps of the course required
+pub const NUM_LAPS: i32 = 1;
 
 /// All of the information about the car at a particular point in time
 // TODO - added debug for ex result
@@ -120,12 +121,46 @@ pub struct Car {
     /// The maximum speed of the car in units per tick
     #[serde(skip)]
     pub max_speed: f32,
-    /// The maximum acceleration of the car
+//    /// The maximum acceleration of the car
+//    #[serde(skip)]
+//    pub max_acc: f32,
+//    /// The maximum deceleration of the car
+//    #[serde(skip)]
+//    pub max_dec: f32,
+    // The maximum turning speed of the car in degrees per tick
     #[serde(skip)]
-    pub max_acc: f32,
-    /// The maximum deceleration of the car
-    #[serde(skip)]
-    pub max_dec: f32,
+    pub max_turn: f32,
+}
+
+// Arbitrary variables
+const CAR_MAX_SPEED: f32 = 10.0;
+const CAR_MAX_ACC: f32 = 2.0;
+const CAR_MAX_DEC: f32 = 2.0;
+const CAR_MAX_TURNING_SPEED: f32 = 10.0;
+
+impl Car {
+    pub fn max_acc(&self) -> f32 {
+        (1.0 - self.speed/self.max_speed )*CAR_MAX_ACC
+    }
+
+    pub fn max_dec(&self) -> f32{
+        (self.speed/self.max_speed )*CAR_MAX_DEC
+    }
+
+    pub fn pos_of_corners(&self) -> Vec<Point>{
+
+        // The relative position of the corners of the car (in polar co-ordinates with distance_to_corners as radius and relative_corner_angle as list of angles)
+        let distance_to_corners = (CAR_LENGTH*CAR_LENGTH + CAR_WIDTH*CAR_WIDTH).sqrt()/2.0;
+        let theta = (CAR_WIDTH/CAR_LENGTH).tan();
+        let relative_corner_angles = vec![theta + self.angle, 180.0 - theta + self.angle, 180.0 + theta + self.angle, 360.0 - theta + self.angle];
+
+        let mut ret = Vec::with_capacity(4);
+        for angle in relative_corner_angles.iter() {
+            ret.push(Point::new_polar(distance_to_corners, *angle))
+        }
+
+        ret
+    }
 }
 
 // Characters that represent the bounds of the racetrack
@@ -287,11 +322,6 @@ impl InitialGrid {
     }
 }
 
-// Arbitrary variables
-const CAR_MAX_SPEED: f32 = 10.0;
-const CAR_MAX_ACC: f32 = 2.0;
-const CAR_MAX_DEC: f32 = 2.0;
-
 impl Racetrack {
     /// Parses a `Racetrack` description from a string
     pub fn from_str(input: &str) -> Result<Self, String> {
@@ -321,17 +351,17 @@ impl Racetrack {
             pos: start_car_pos,
             // Currently, the car will always start pointing upwards. This could be something we'd
             // like to configure in the future, but it's not necessary yet.
-            angle: 0_f32,
+            angle: 180_f32,
             // The car always starts at a standstill - another thing that could be changed but
             // probably doesn't need to be
             speed: 0_f32,
             max_speed: CAR_MAX_SPEED,
-            max_acc: CAR_MAX_ACC,
-            max_dec: CAR_MAX_DEC,
+            max_turn: CAR_MAX_TURNING_SPEED,
         };
 
         let width = initial_grid.width;
         let height = initial_grid.rows.len();
+        let laps = NUM_LAPS;
 
         // It turns out to be useful to have some way of referring to directions. We'll use this at
         // a couple points later.
@@ -623,6 +653,7 @@ impl Racetrack {
             initial_car_state,
             finish_line,
             tile_size,
+            laps,
         })
     }
 

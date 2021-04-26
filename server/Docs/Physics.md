@@ -9,9 +9,13 @@
 
 ## Things to Note
  - The users affect on the car happen at the start of the tick (before calculating new position)
+ - The car starts strictly behind the finishline
+ - The car goes round the track anticlockwise
+ - The car always starts pointing down
 
 
 ## Current assumptions
- - The car has a max speed and acc and dec and it is always able to go to those acc and dec no matter the Speed
- - The car is incapable of reversing
- - The car can instantly snap to whatever angle is required
+ - The car's max acc and dec are linearly dependant on speed
+    - So if 0% speed it has 100% of max acceleration and 0% max deceleration
+    - So if 50% speed it has 50% of max acceleration and 50% max deceleration
+    - So if 80% speed it has 20% of max acceleration and 80% max deceleration

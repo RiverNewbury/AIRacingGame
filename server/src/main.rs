@@ -4,13 +4,13 @@
 //! * Receiving & executing user scripts;
 //! * Simulating the car's run around a racetrack;
 //! * Sending back the full race & time; and
-//! * Displaying the leaderboad upon request
+//! * Displaying the leaderboard upon request
 
 #![feature(decl_macro)]
 
 use lazy_static::lazy_static;
 use rocket::response::status::BadRequest;
-use rocket::{post, routes};
+use rocket::{get, post, routes};
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 
@@ -19,8 +19,8 @@ mod leaderboard;
 mod sim;
 
 use code::Code;
-use leaderboard::Leaderboard;
-use sim::{Racetrack, Simulation, SimulationHistory};
+use leaderboard::{Leaderboard, LeaderboardEntry};
+use sim::{Racetrack, Simulation, SimulationHistory, SimulationData};
 
 //For exResults
 use sim::{Car, Point, Score};
@@ -37,11 +37,10 @@ type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 fn exec_user_code(
     username: String,
     source_code: String,
-) -> RequestResult<(SimulationHistory, Score)> {
+) -> RequestResult<SimulationData> {
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
 
-    //Not able to be parallel with just 1 as id
-    let (score, history) = (Simulation::new(1, code, &RACETRACK))
+    let (score, history) = (Simulation::new(code, &RACETRACK))
         .simulate()
         .map_err(|e| BadRequest(Some(e)))?;
 
@@ -51,16 +50,25 @@ fn exec_user_code(
         .expect("leaderboard mutex already poisoned!")
         .add(username, source_code, score);
 
-    Ok(Json((history, score)))
+    Ok(Json(SimulationData { history: history, score: score }))
+}
+
+#[get("/leaderboard/<n>")]
+fn get_leaderboard(n: usize) -> RequestResult<Vec<LeaderboardEntry>> {
+    let lb_guard = LEADERBOARD.lock().unwrap();
+    let entries: Vec<_> = lb_guard.top_n(n).collect();
+    drop(lb_guard);
+
+    Ok(Json(entries))
 }
 
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
-    // ex_result()
+    ex_result();
 
     rocket::ignite()
-        .mount("/", routes![exec_user_code])
+        .mount("/", routes![exec_user_code, get_leaderboard])
         .launch();
 }
 
@@ -75,8 +83,7 @@ fn ex_result() {
         angle: 0.0,
         speed: 0.0,
         max_speed: 1.0,
-        max_acc: 1.0,
-        max_dec: 1.0,
+        max_turn: 1.0,
     };
 
     let h = SimulationHistory {

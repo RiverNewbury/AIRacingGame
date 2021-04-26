@@ -27,6 +27,22 @@ impl Point {
             ..self
         }
     }
+    // Gives euclidean distance from point to (0,0)
+    pub fn length(&self) -> f32 {
+        (self.x*self.x + self.y*self.y).sqrt()
+    }
+
+    // TODO - Check I've got this the right way around
+    // ^ Checked by @sharnoff - looks good
+
+    // Produces a new point radius away from the origin at an angle of angle anticlockwise from +ive y
+    pub fn new_polar(radius : f32, angle : f32) -> Point{
+        Point {
+            x: angle.cos() * radius,
+            y: angle.sin() * radius,
+        }
+
+    }
 }
 
 impl Add for Point {
