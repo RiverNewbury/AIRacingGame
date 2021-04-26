@@ -11,7 +11,7 @@
  - Json message with code + username
  - Request leaderboard
 
-## To Client 
+## To Client
 
  - Message with current pos, orientation and speed + timestamp
 
@@ -19,10 +19,40 @@
 
  - Python as basis
  - User makes a function which given the environment says what the car should be doing
- - Environment = {the whole map, velocity of car} 
+ - Environment = {the whole map, velocity of car}
  - Output = {acceleration value (fractional - how much the pedal is down), intended angle, turning speed}
-  - values important to the car 
+  - values important to the car
   - possible target volicity
   - Drift? bad thing
   - Gears?
 
+
+
+## Time Plan
+ - River
+  - <del>Finish the work on Exec Environment</del>
+  - <del>Treat car as a rectangle as opposed to a point</del>
+  - Work out how the acceleration curves for the car should work (turb vs not)
+  - Come up with a more complex damage system for the car
+  - Research into gears and Drifting
+
+
+ - Beth
+  - Get initial implementation of leader board done
+  - Work out how the FE wants to receive the racetrack
+
+ - Max
+  - Finish coding + Merge the python scripting language branch with the main branch
+  - Add functionality on server side to send out the racetrack
+  - Do a terrible initial example of a racecar AI to demonstrate it working
+
+ - Luca
+  - Finish off the server facing bit of the front end
+  - Help beth with the server facing part of the client
+
+ - General Front end
+  - Improve visuals : make the car not a sphere + add skins for car?
+  - Market research
+
+ - General Back End
+  - Do docs for scripting language
