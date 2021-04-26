@@ -12,13 +12,12 @@ public class sendCode : MonoBehaviour
 {
 	public InputField codeField;
 	public InputField usernameField;
-	public string serverAddress;
-
+	InfoObject infoObject;
 
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
 	}
 
 	// Update is called once per frame
@@ -32,17 +31,16 @@ public class sendCode : MonoBehaviour
 		WWWForm form = new WWWForm();
 		form.AddField("source_code", codeField.text);
 
-		UnityWebRequest postRequest = UnityWebRequest.Post(serverAddress + ":8000/run/" + usernameField.text, form);
+		UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, form);
 		postRequest.SendWebRequest();
 
-		//if (postRequest.result != UnityWebRequest.Result.Success) {
+		if (postRequest.result != UnityWebRequest.Result.Success) {
 			Debug.Log(postRequest.error);
-		//} else {
-			Debug.Log("Form upload complete!");
+		} else {
+			Debug.Log("Post request successful");
 
-			Debug.Log(postRequest.downloadHandler.text);
-			InfoObject.ParseHistory(postRequest.downloadHandler.text);
+			infoObject.ParseHistory(postRequest.downloadHandler.text);
 			SceneManager.LoadScene(sceneName:"simulation");
-		//}
+		}
 	}
 }

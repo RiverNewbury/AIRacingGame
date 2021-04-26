@@ -42,6 +42,7 @@ public class InfoObject : MonoBehaviour
 	//static public History history;
 	//static public Score score;
 	static public SimulationData simulationData;
+	public string serverAddress;
 
 	void Awake()
 	{
@@ -49,7 +50,7 @@ public class InfoObject : MonoBehaviour
 	}
 
 	// turn JSON string into data stored in this object
-	static public void ParseHistory(string historyJson)
+	public void ParseHistory(string historyJson)
 	{
 		simulationData = JsonUtility.FromJson<SimulationData>(historyJson);
 	}
