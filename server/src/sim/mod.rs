@@ -181,11 +181,6 @@ impl Simulation {
         (car.speed + actual_acc).min(car.max_speed)
     }
 
-    //TODO: Don't let them turn at any speed per tick like a god damn owl
-    fn angle_after_tick(&self, turning_speed: f32) -> f32 {
-        self.car.angle + turning_speed
-    }
-
     // TODO - Probably should use more advanced line system
     fn in_bounds(&self, point: Point) -> bool {
         let square = self.track.get_tile(point);
@@ -256,10 +251,13 @@ impl Simulation {
 
             let start_pos = self.car.pos_of_corners();
 
-            self.car.speed = self.speed_after_tick(action.acc);
-            self.car.angle = self.angle_after_tick(action.turning_speed);
+            let new_speed = self.speed_after_tick(action.acc);
 
-            self.car.pos += Point::new_polar(self.car.speed, self.car.angle);
+            // The speed of the car is per-tick, so the distance traveled in a single tick is just
+            // the average speed for that tick. We'll assume the speed increases uniformly.
+            let dist = (self.car.speed + new_speed) / 2.0;
+            self.car.speed = new_speed;
+            self.car.update_state(dist, action.turning_speed);
 
             hist.history.push(self.car.clone());
 

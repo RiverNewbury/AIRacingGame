@@ -26,7 +26,9 @@ pub struct Code {
 #[derive(FromPyObject)]
 pub struct Output {
     pub acc: f32, // fraction of how much the pedal is down - Between -1 and 1 negative being breaking
-    pub turning_speed: f32, // Speed in radians/tick to turn
+    /// A value between -1 and 1 indicating how the car should turn. -1 is as left as possible, and
+    /// 1 is as right as possible.
+    pub turning_speed: f32,
 }
 
 /// The execution environment for user-submitted code, providing information about the state of the
