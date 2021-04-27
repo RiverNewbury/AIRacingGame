@@ -41,7 +41,7 @@ public class InfoObject : MonoBehaviour
 {
 	//static public History history;
 	//static public Score score;
-	static public SimulationData simulationData;
+	public SimulationData simulationData;
 	public string serverAddress;
 
 	void Awake()
