@@ -237,7 +237,7 @@ impl Simulation {
         assert!(CAR_WIDTH < 1.0);
 
         let mut hist = SimulationHistory {
-            history: Vec::new(),
+            history: vec![self.car],
             tps: TICKS_PER_SECOND,
         };
 
