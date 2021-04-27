@@ -39,8 +39,9 @@
 
  - Beth
   - <del>Get initial implementation of leader board done</del>
-  - Add in scene transitions
-  - Add in way of visualising lap finish/crash
+  - add in network mesh to leaderboard
+  - <del>Add in scene transitions</del>
+  - <del>Add in way of visualising lap finish/crash</del>
   - Work out how the FE wants to receive the racetrack
 
  - Max
