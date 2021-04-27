@@ -14,10 +14,10 @@ const TICKS_PER_UPDATE: i32 = 10;
 // The number of checks/ unit dist along a line that the car travels to make sure it never goes out of bounds
 const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
 // The maximum error acceptable when giving the distance to the wall to the User
-const ACCURACY_OF_DIST_TO_WALL :f32 = 0.001;
+const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
 // MUST - devide 360 in the ring on integers
-const NUMBER_ANGLES_TO_CHECK :usize = 60;
+const NUMBER_ANGLES_TO_CHECK: usize = 60;
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -46,13 +46,13 @@ pub struct SimulationHistory {
 
 #[derive(Serialize, Debug)]
 pub struct SimulationData {
-    pub history : SimulationHistory,
-    pub score : Score,
+    pub history: SimulationHistory,
+    pub score: Score,
 }
 
 impl Simulation {
     fn make_environment(&self) -> ExecEnvironment {
-        let go_dist = | start: Point, dist: f32, angle :f32|{
+        let go_dist = |start: Point, dist: f32, angle: f32| {
             let traveled = Point {
                 x: angle.cos() * dist,
                 y: angle.sin() * dist,
@@ -60,13 +60,13 @@ impl Simulation {
             start + traveled
         };
 
-        let f = | angle :f32 | {
+        let f = |angle: f32| {
             let mut dist_traveled = 0.0;
             let mut precision = 1.0;
             let mut start = self.car.pos;
             let mut end = go_dist(start, precision, angle);
 
-            while precision > ACCURACY_OF_DIST_TO_WALL{
+            while precision > ACCURACY_OF_DIST_TO_WALL {
                 let hit = self.hit_wall(start, end);
                 if hit {
                     dist_traveled += precision;
@@ -76,22 +76,20 @@ impl Simulation {
                     precision /= 2.0;
                 }
                 end = go_dist(start, precision, angle);
-
             }
 
             dist_traveled
         };
         let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
-        let angle_delta = 360/NUMBER_ANGLES_TO_CHECK;
+        let angle_delta = 360 / NUMBER_ANGLES_TO_CHECK;
 
         for i in 0..NUMBER_ANGLES_TO_CHECK {
-            dists.push(f((i*angle_delta) as f32))
+            dists.push(f((i * angle_delta) as f32))
         }
 
-
-        ExecEnvironment{
-            car_currently : self.car,
-            dist_to_wall :  dists,
+        ExecEnvironment {
+            car_currently: self.car,
+            dist_to_wall: dists,
         }
     }
 
@@ -102,7 +100,7 @@ impl Simulation {
         let intersection = Simulation::intersection_of_2_lines(start, end, p1, p2);
 
         //TODO : If p2.x = p1.x then it breaks FIX
-        let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x)/ (p2.x - p1.x);
+        let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x) / (p2.x - p1.x);
 
         //Tells you if coming from the correct direction
         // TODO : may break if doesn't start at 180 angle
@@ -111,8 +109,10 @@ impl Simulation {
         match intersection {
             None => false,
             Some(p) => {
-                if Simulation::between_2_points(p1,p2, p) && Simulation::between_2_points(start, end, p){
-                    if correct_direction && (self.laps == 0){
+                if Simulation::between_2_points(p1, p2, p)
+                    && Simulation::between_2_points(start, end, p)
+                {
+                    if correct_direction && (self.laps == 0) {
                         true
                     } else if correct_direction {
                         self.laps -= 1;
@@ -124,39 +124,39 @@ impl Simulation {
                 } else {
                     false
                 }
-            },
+            }
         }
     }
 
-    fn between_2_points(p1:Point, p2: Point, point_2_compare: Point) -> bool {
+    fn between_2_points(p1: Point, p2: Point, point_2_compare: Point) -> bool {
         let xbetween = p1.x >= point_2_compare.x && p2.x <= point_2_compare.x
-                    || p1.x <= point_2_compare.x && p2.x >= point_2_compare.x;
+            || p1.x <= point_2_compare.x && p2.x >= point_2_compare.x;
 
         let ybetween = p1.y >= point_2_compare.y && p2.y <= point_2_compare.y
-                    || p1.y <= point_2_compare.y && p2.y >= point_2_compare.y;
+            || p1.y <= point_2_compare.y && p2.y >= point_2_compare.y;
 
         xbetween && ybetween
     }
 
-    fn intersection_of_2_lines(s1: Point, e1: Point, s2:Point, e2:Point) -> Option<Point> {
+    fn intersection_of_2_lines(s1: Point, e1: Point, s2: Point, e2: Point) -> Option<Point> {
         // Line s1 e1 represented a1x + b1y = c1
         let a1 = s1.y - e1.y;
         let b1 = s1.x - e1.x;
-        let c1 = a1*s1.x + b1*s1.y;
+        let c1 = a1 * s1.x + b1 * s1.y;
 
         // Line s2 e2 represented as a2x + b2y = c2
         let a2 = s2.y - e2.y;
         let b2 = s2.x - e2.x;
-        let c2 = a2*s2.x + b2*s2.y;
+        let c2 = a2 * s2.x + b2 * s2.y;
 
-        let det = a1*b2 - a2*b1;
+        let det = a1 * b2 - a2 * b1;
 
         if det.abs() <= 0.00000001 {
             None
         } else {
-            let x = (b2*c1 - b1*c2)/det;
-            let y = (a1*c2 - a2*c1)/det;
-            Some(Point{x, y})
+            let x = (b2 * c1 - b1 * c2) / det;
+            let y = (a1 * c2 - a2 * c1) / det;
+            Some(Point { x, y })
         }
     }
 
@@ -164,7 +164,7 @@ impl Simulation {
     // ASSUMES - that the car is thinner than 1 unit
     fn hit_wall(&self, start: Point, end: Point) -> bool {
         let mut point_checking = start;
-        let num_checks : i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
+        let num_checks: i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
         let delta = (end - start) / (num_checks as f32);
 
         for _i in 0..=num_checks {
@@ -185,7 +185,7 @@ impl Simulation {
     }
 
     //TODO: Don't let them turn at any speed per tick like a god damn owl
-    fn angle_after_tick(&self,turning_speed: f32) -> f32 {
+    fn angle_after_tick(&self, turning_speed: f32) -> f32 {
         self.car.angle + turning_speed
     }
 
@@ -268,7 +268,7 @@ impl Simulation {
 
             let end_pos = self.car.pos_of_corners();
 
-            for (s,f) in start_pos.iter().zip(end_pos.iter()) {
+            for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
                     let score = Score {
                         successful: false,
@@ -279,13 +279,11 @@ impl Simulation {
                 }
             }
 
-
-            for (s,f) in start_pos.iter().zip(end_pos.iter()) {
+            for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.passed_finish_line(*s, *f) {
                     passed_finish = true
                 }
             }
-
         }
 
         let score = Score {
@@ -301,7 +299,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state,
-            laps: 4*track.laps,
+            laps: 4 * track.laps,
         }
     }
 }

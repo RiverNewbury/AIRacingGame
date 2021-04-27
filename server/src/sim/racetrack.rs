@@ -121,12 +121,12 @@ pub struct Car {
     /// The maximum speed of the car in units per tick
     #[serde(skip)]
     pub max_speed: f32,
-//    /// The maximum acceleration of the car
-//    #[serde(skip)]
-//    pub max_acc: f32,
-//    /// The maximum deceleration of the car
-//    #[serde(skip)]
-//    pub max_dec: f32,
+    //    /// The maximum acceleration of the car
+    //    #[serde(skip)]
+    //    pub max_acc: f32,
+    //    /// The maximum deceleration of the car
+    //    #[serde(skip)]
+    //    pub max_dec: f32,
     // The maximum turning speed of the car in degrees per tick
     #[serde(skip)]
     pub max_turn: f32,
@@ -140,19 +140,23 @@ const CAR_MAX_TURNING_SPEED: f32 = 10.0;
 
 impl Car {
     pub fn max_acc(&self) -> f32 {
-        (1.0 - self.speed/self.max_speed )*CAR_MAX_ACC
+        (1.0 - self.speed / self.max_speed) * CAR_MAX_ACC
     }
 
-    pub fn max_dec(&self) -> f32{
-        (self.speed/self.max_speed )*CAR_MAX_DEC
+    pub fn max_dec(&self) -> f32 {
+        (self.speed / self.max_speed) * CAR_MAX_DEC
     }
 
-    pub fn pos_of_corners(&self) -> Vec<Point>{
-
+    pub fn pos_of_corners(&self) -> Vec<Point> {
         // The relative position of the corners of the car (in polar co-ordinates with distance_to_corners as radius and relative_corner_angle as list of angles)
-        let distance_to_corners = (CAR_LENGTH*CAR_LENGTH + CAR_WIDTH*CAR_WIDTH).sqrt()/2.0;
-        let theta = (CAR_WIDTH/CAR_LENGTH).tan();
-        let relative_corner_angles = vec![theta + self.angle, 180.0 - theta + self.angle, 180.0 + theta + self.angle, 360.0 - theta + self.angle];
+        let distance_to_corners = (CAR_LENGTH * CAR_LENGTH + CAR_WIDTH * CAR_WIDTH).sqrt() / 2.0;
+        let theta = (CAR_WIDTH / CAR_LENGTH).tan();
+        let relative_corner_angles = vec![
+            theta + self.angle,
+            180.0 - theta + self.angle,
+            180.0 + theta + self.angle,
+            360.0 - theta + self.angle,
+        ];
 
         let mut ret = Vec::with_capacity(4);
         for angle in relative_corner_angles.iter() {
