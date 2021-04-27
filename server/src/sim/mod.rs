@@ -19,7 +19,7 @@ const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
 // The maximum error acceptable when giving the distance to the wall to the User
 const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
-const NUMBER_ANGLES_TO_CHECK: usize = 60;
+const NUMBER_ANGLES_TO_CHECK: usize = 2;//60;
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -52,10 +52,7 @@ pub struct SimulationData {
 impl Simulation {
     fn make_environment(&self) -> ExecEnvironment {
         let go_dist = |start: Point, dist: f32, angle: f32| {
-            let traveled = Point {
-                x: angle.cos() * dist,
-                y: angle.sin() * dist,
-            };
+            let traveled = Point::new_polar(dist, angle);
             start + traveled
         };
 
@@ -67,7 +64,7 @@ impl Simulation {
 
             while precision > ACCURACY_OF_DIST_TO_WALL {
                 let hit = self.hit_wall(start, end);
-                if hit {
+                if !hit {
                     dist_traveled += precision;
                     precision *= 2.0;
                     start = end;

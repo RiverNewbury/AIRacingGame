@@ -33,7 +33,7 @@ impl Point {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
-    // Produces a new point radius away from the origin at an angle, anticlockwise
+    // Produces a new point radius away from the origin at an angle, anticlockwise from +ive x
     pub fn new_polar(radius: f32, angle: f32) -> Point {
         Point {
             x: angle.cos() * radius,
