@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Launches the server and gives it 'test.py' to run. By default, rocket seems
+# to use port 8000, so we're using that here. This script might break if that
+# changes
+
+cargo run &
+
+server_pid=$!
+
+# Because the server sometimes takes a while to start up, we'll sleep for a bit
+# to give it a chance.
+sleep 0.5
+
+curl -X POST --data-binary '@test.py' "http://localhost:8000/run/test_user"
+
+kill $server_pid
