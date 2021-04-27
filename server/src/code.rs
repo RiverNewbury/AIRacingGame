@@ -13,8 +13,6 @@ use pyo3::types::PyDict;
 
 pub use crate::sim::{Car, Point};
 
-// TODO: This module is currently a skeleton, yet to be implemented
-
 /// User-submitted code
 ///
 /// For Python code, this is parsed each time it is used
