@@ -20,10 +20,7 @@ mod sim;
 
 use code::Code;
 use leaderboard::{Leaderboard, LeaderboardEntry};
-use sim::{Racetrack, Simulation, SimulationData, SimulationHistory};
-
-//For exResults
-use sim::{Car, Point, Score};
+use sim::{Racetrack, Simulation, SimulationData};
 
 lazy_static! {
     static ref LEADERBOARD: Mutex<Leaderboard> = Mutex::new(Leaderboard::new());
@@ -65,47 +62,8 @@ fn get_leaderboard(n: usize) -> RequestResult<Vec<LeaderboardEntry>> {
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
-    ex_result();
 
     rocket::ignite()
         .mount("/", routes![exec_user_code, get_leaderboard])
         .launch();
-}
-
-fn ex_result() {
-    let s = Score {
-        successful: true,
-        time: 129,
-    };
-
-    let base_car = Car {
-        pos: Point { x: 1.0, y: 1.0 },
-        angle: 0.0,
-        speed: 0.0,
-        max_speed: 1.0,
-        max_turn: 1.0,
-    };
-
-    let h = SimulationHistory {
-        history: vec![
-            base_car,
-            Car {
-                pos: Point { x: 1.5, y: 1.5 },
-                angle: 45.0,
-                speed: 3.0,
-                ..base_car
-            },
-            Car {
-                pos: Point { x: 3.5, y: 3.5 },
-                angle: 90.0,
-                speed: 12.0,
-                ..base_car
-            },
-        ],
-        tps: 100,
-    };
-
-    let a = Json((h, s));
-
-    print!("{:?}", a)
 }

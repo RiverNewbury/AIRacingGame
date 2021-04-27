@@ -5,7 +5,6 @@ use serde::Serialize;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
-// TODO - added debug for ex result
 #[pyclass]
 #[derive(Copy, Clone, Serialize, Debug)]
 pub struct Point {

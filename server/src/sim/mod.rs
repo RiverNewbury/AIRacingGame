@@ -29,19 +29,16 @@ pub struct Simulation {
     laps: i32,
 }
 
-//TODO - Made field public for score + sim hist pub for ex result
-// TODO - added debug for ex result
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Debug)]
 pub struct Score {
-    pub successful: bool,
-    pub time: i32, // In terms of ticks
+    successful: bool,
+    time: i32, // In terms of ticks
 }
 
-// TODO - added debug for ex result
 #[derive(Serialize, Debug)]
 pub struct SimulationHistory {
-    pub history: Vec<Car>,
-    pub tps: i32, // Ticks per second used for this simulation
+    history: Vec<Car>,
+    tps: i32, // Ticks per second used for this simulation
 }
 
 #[derive(Serialize, Debug)]
