@@ -80,9 +80,9 @@ impl Simulation {
             dist_traveled
         };
         let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
-        let angle_delta = 2.0 * PI / NUMBER_ANGLES_TO_CHECK as f32;
+        let angle_delta = PI / (NUMBER_ANGLES_TO_CHECK as f32 - 1.0);
 
-        for i in 0..NUMBER_ANGLES_TO_CHECK {
+        for i in (0..NUMBER_ANGLES_TO_CHECK).rev() {
             dists.push(f(i as f32 * angle_delta))
         }
 
