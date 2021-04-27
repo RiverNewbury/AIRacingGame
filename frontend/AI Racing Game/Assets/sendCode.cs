@@ -30,7 +30,8 @@ public class sendCode : MonoBehaviour
 	{
 		WWWForm form = new WWWForm();
 		form.AddField("source_code", codeField.text);
-
+		if (usernameField.text == ""){Debug.Log("No username");}
+		else{
 		UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, form);
 		postRequest.SendWebRequest();
 
@@ -41,6 +42,7 @@ public class sendCode : MonoBehaviour
 
 			infoObject.ParseHistory(postRequest.downloadHandler.text);
 			SceneManager.LoadScene(sceneName:"CarSimulation");
+		}
 		}
 	}
 }
