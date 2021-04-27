@@ -98,14 +98,6 @@ impl GridTile {
     }
 }
 
-// Note: the size of the car really only makes sense when compared to the size of the tiles in a
-// racetrack grid. The size of the car is probably unlikely to change, whereas the tile size is
-// explicitly variable.
-
-/// The absolute size length of the car
-pub const CAR_LENGTH: f32 = 1.0;
-/// The width of the car
-pub const CAR_WIDTH: f32 = 0.3;
 /// The number of laps of the course required
 pub const NUM_LAPS: i32 = 1;
 
@@ -122,21 +114,42 @@ pub struct Car {
     pub speed: f32,
 }
 
-// Car speed constants, in terms of the change per tick. As such, each parameter is first relative
-// to the values PER SECOND, and then divides by the number of ticks in a second.
-//
-// Acceleration is additionally relative to the maximum speed.
-pub const CAR_MAX_SPEED: f32 = 10.0 / TICKS_PER_SECOND as f32;
-const CAR_MAX_ACC: f32 = 0.5 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
-const CAR_MAX_DEC: f32 = 0.3 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
-
 impl Car {
+    // Note: the size of the car really only makes sense when compared to the size of the tiles in
+    // a racetrack grid. The size of the car is probably unlikely to change, whereas the tile size
+    // is explicitly variable.
+    /// The absolute size length of the car
+    pub const LENGTH: f32 = 1.0;
+    /// The width of the car
+    pub const WIDTH: f32 = 0.3 * Self::LENGTH;
+
+    /// The maximum allowed speed of a car, in units per tick
+    pub const MAX_SPEED: f32 = 10.0 / TICKS_PER_SECOND as f32;
+
+    /// The maximum forward acceleration of the car, in units per tick, per tick
+    ///
+    /// The [`max_acc`] method uses linear scaling so that the *actual* maximum forward
+    /// acceleratoin is equal to this value at a speed of zero, and approaches zero as the car's
+    /// speed approaches `MAX_SPEED`
+    ///
+    /// [`max_acc`]: Self::max_acc
+    const MAX_ACC: f32 = 0.5 * Car::MAX_SPEED / TICKS_PER_SECOND as f32;
+
+    /// The maximum (backward) deceleration of the car, in units per tick, per tick
+    ///
+    /// Like `CAR_MAX_ACC`, this also has linear scaling provided by [`max_dec`](Self::max_dec)
+    const MAX_DEC: f32 = 0.3 * Car::MAX_SPEED / TICKS_PER_SECOND as f32;
+
+    /// The maximum acceleration of the car, scaled so that the maximum allowed acceleration
+    /// approaches zero as the car's speed approaches `MAX_SPEED`
     pub fn max_acc(&self) -> f32 {
-        (1.0 - self.speed) * CAR_MAX_ACC
+        (1.0 - self.speed / Self::MAX_SPEED) * Self::MAX_ACC
     }
 
+    /// The maximum deceleration of the car, scaled so that the maximum allowd deceleration
+    /// approaches zero as the car's speed approaches zero
     pub fn max_dec(&self) -> f32 {
-        self.speed * CAR_MAX_DEC
+        self.speed / Self::MAX_SPEED * Self::MAX_DEC
     }
 
     pub fn pos_of_corners(&self) -> Vec<Point> {
@@ -165,8 +178,8 @@ impl Car {
         // Getting these displacements is actualy pretty simple! Let's go through them. Looking at
         // these with the above diagram in mind makes quick checks nice for us :)
         let to_front = Point {
-            x: self.angle.cos() * CAR_LENGTH,
-            y: self.angle.sin() * CAR_LENGTH,
+            x: self.angle.cos() * Car::LENGTH,
+            y: self.angle.sin() * Car::LENGTH,
         };
 
         // The angle here is rotated clockwise by a quarter-turn -- i.e. PI/2. We could use that
@@ -177,8 +190,8 @@ impl Car {
         //
         // So we get:
         let to_right = Point {
-            x: self.angle.sin() * CAR_WIDTH,
-            y: -self.angle.cos() * CAR_WIDTH,
+            x: self.angle.sin() * Car::WIDTH,
+            y: -self.angle.cos() * Car::WIDTH,
         };
 
         vec![
@@ -241,9 +254,9 @@ impl Car {
             // The center of the circle is to the right of the center of the car, and we can
             // calculate the radius 'r' by:
             //
-            //   r * sin(θ/2) = CAR_WIDTH / 2
+            //   r * sin(θ/2) = Car::WIDTH / 2
             //
-            //   => r = CAR_WIDTH / (2 * sin(θ/2))
+            //   => r = Car::WIDTH / (2 * sin(θ/2))
             //
             // Drawing a simple diagram of the problem should illuminate the above.
             //
@@ -257,7 +270,7 @@ impl Car {
             //   y´ = r * sin(α)
             // Remember that the x coordinate has to be flipped because the circle is to the right
             // of the car.
-            let r = CAR_WIDTH / (2.0 * f32::sin(wheel_angle / 2.0));
+            let r = Car::WIDTH / (2.0 * f32::sin(wheel_angle / 2.0));
             let alpha = distance / r;
 
             unrotated_pos_shift = Point {
@@ -274,7 +287,7 @@ impl Car {
             wheel_angle = wheel_angle.abs();
 
             // r is same as above, and so is alpha
-            let r = CAR_WIDTH / (2.0 * f32::sin(wheel_angle / 2.0));
+            let r = Car::WIDTH / (2.0 * f32::sin(wheel_angle / 2.0));
             let alpha = distance / r;
 
             // But the final coordinates are just a bit different. Again, shouldn't be too tricky
