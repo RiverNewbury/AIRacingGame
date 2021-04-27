@@ -8,7 +8,9 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 #[pyclass]
 #[derive(Copy, Clone, Serialize, Debug)]
 pub struct Point {
+    #[pyo3(get)]
     pub x: f32,
+    #[pyo3(get)]
     pub y: f32,
 }
 

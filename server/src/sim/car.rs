@@ -11,10 +11,13 @@ use super::{Point, TICKS_PER_SECOND};
 #[derive(Clone, Serialize, Debug)]
 pub struct Car {
     /// The position of the car
+    #[pyo3(get)]
     pub pos: Point,
     /// The angle the car is facing, anticlockwise from the positive x direction - in radians
+    #[pyo3(get)]
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
+    #[pyo3(get)]
     pub speed: f32,
 }
 

@@ -19,7 +19,7 @@ const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
 // The maximum error acceptable when giving the distance to the wall to the User
 const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
-const NUMBER_ANGLES_TO_CHECK: usize = 2;//60;
+const NUMBER_ANGLES_TO_CHECK: usize = 60;
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -263,6 +263,8 @@ impl Simulation {
             hist.history.push(self.car.clone());
 
             let end_pos = self.car.pos_of_corners();
+
+            //print!("{:?}", hist.history[hist.history.len() - 1]);
 
             for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
