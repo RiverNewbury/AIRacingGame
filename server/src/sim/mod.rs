@@ -2,11 +2,13 @@ use crate::code::{Code, ExecEnvironment};
 use serde::Serialize;
 use std::f32::consts::PI;
 
+mod car;
 mod point;
 mod racetrack;
 
+pub use car::Car;
 pub use point::Point;
-pub use racetrack::{Car, GridTile, Racetrack};
+pub use racetrack::{GridTile, Racetrack};
 
 // A tick is the unit on which thte simulation will update the world
 const TICKS_PER_SECOND: i32 = 100;
