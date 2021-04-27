@@ -178,7 +178,7 @@ impl Simulation {
         let car = self.car;
         let actual_acc = acc * car.max_acc();
 
-        (car.speed + actual_acc).max(car.max_speed)
+        (car.speed + actual_acc).min(car.max_speed)
     }
 
     //TODO: Don't let them turn at any speed per tick like a god damn owl
