@@ -1,5 +1,6 @@
 use crate::code::{Code, ExecEnvironment};
 use serde::Serialize;
+use std::f32::consts::PI;
 
 mod point;
 mod racetrack;
@@ -16,7 +17,6 @@ const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
 // The maximum error acceptable when giving the distance to the wall to the User
 const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
-// MUST - devide 360 in the ring on integers
 const NUMBER_ANGLES_TO_CHECK: usize = 60;
 
 // Almost all the computation will be done in the Simulation Object
@@ -78,10 +78,10 @@ impl Simulation {
             dist_traveled
         };
         let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
-        let angle_delta = 360 / NUMBER_ANGLES_TO_CHECK;
+        let angle_delta = 2.0 * PI / NUMBER_ANGLES_TO_CHECK as f32;
 
         for i in 0..NUMBER_ANGLES_TO_CHECK {
-            dists.push(f((i * angle_delta) as f32))
+            dists.push(f(i as f32 * angle_delta))
         }
 
         ExecEnvironment {

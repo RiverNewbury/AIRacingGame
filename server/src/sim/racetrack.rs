@@ -12,6 +12,7 @@ use super::Point;
 use pyo3::prelude::pyclass;
 use serde::Serialize;
 use std::collections::HashSet;
+use std::f32::consts::PI;
 
 /// In-memory representation of a racetrack
 ///
@@ -115,7 +116,7 @@ pub const NUM_LAPS: i32 = 1;
 pub struct Car {
     /// The position of the car
     pub pos: Point,
-    /// The angle the car is facing, anticlockwise from the positive y direction - in radians
+    /// The angle the car is facing, anticlockwise from the positive x direction - in radians
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
     pub speed: f32,
@@ -129,7 +130,7 @@ pub struct Car {
     //    /// The maximum deceleration of the car
     //    #[serde(skip)]
     //    pub max_dec: f32,
-    // The maximum turning speed of the car in degrees per tick
+    // The maximum turning speed of the car in radians per tick
     #[serde(skip)]
     pub max_turn: f32,
 }
@@ -138,7 +139,7 @@ pub struct Car {
 const CAR_MAX_SPEED: f32 = 10.0;
 const CAR_MAX_ACC: f32 = 2.0;
 const CAR_MAX_DEC: f32 = 2.0;
-const CAR_MAX_TURNING_SPEED: f32 = 10.0;
+const CAR_MAX_TURNING_SPEED: f32 = PI / 18.0; // equivalent to 10°
 
 impl Car {
     pub fn max_acc(&self) -> f32 {
@@ -150,22 +151,57 @@ impl Car {
     }
 
     pub fn pos_of_corners(&self) -> Vec<Point> {
-        // The relative position of the corners of the car (in polar co-ordinates with distance_to_corners as radius and relative_corner_angle as list of angles)
-        let distance_to_corners = (CAR_LENGTH * CAR_LENGTH + CAR_WIDTH * CAR_WIDTH).sqrt() / 2.0;
-        let theta = (CAR_WIDTH / CAR_LENGTH).tan();
-        let relative_corner_angles = vec![
-            theta + self.angle,
-            180.0 - theta + self.angle,
-            180.0 + theta + self.angle,
-            360.0 - theta + self.angle,
-        ];
+        // Let's imagine the car going upwards; its angle will be PI/2. We want to determine where
+        // the corners are. We can use the the front/back and left/right offset from one corner to
+        // determine all the rest, so let's just focus on getting the position of the front-right
+        // corner, relative to all the rest.
+        //
+        // So let's look at the following diagram of the car. The asterisk gives us the center of
+        // the car:
+        //          +---+ displacement from center to center right
+        //          |   |
+        //      +---+===+ -+
+        //      |   |   |  | displacement from center to front center
+        //      |   |   |  |
+        //      |   |   |  |
+        //      |   *   | -+
+        //      |       |
+        //      |       |
+        //      |       |
+        //      +-------+
+        //
+        // If we calculate these as `Point`s, we'll get the x and y components separately, so we
+        // can add all the positive and negative combinations to get the four corners of the car.
+        //
+        // Getting these displacements is actualy pretty simple! Let's go through them. Looking at
+        // these with the above diagram in mind makes quick checks nice for us :)
+        let to_front = Point {
+            x: self.angle.cos() * CAR_LENGTH,
+            y: self.angle.sin() * CAR_LENGTH,
+        };
 
-        let mut ret = Vec::with_capacity(4);
-        for angle in relative_corner_angles.iter() {
-            ret.push(Point::new_polar(distance_to_corners, *angle))
-        }
+        // The angle here is rotated clockwise by a quarter-turn -- i.e. PI/2. We could use that
+        // directly, but we know from our trig identities that:
+        //
+        //   cos(θ - π/2) =   cos(π/2 - θ) =   sin(θ), and
+        //   sin(θ - π/2) = - sin(π/2 - θ) = - cos(θ).
+        //
+        // So we get:
+        let to_right = Point {
+            x: self.angle.sin() * CAR_WIDTH,
+            y: -self.angle.cos() * CAR_WIDTH,
+        };
 
-        ret
+        vec![
+            // Front right
+            self.pos + to_front + to_right,
+            // Front left
+            self.pos + to_front - to_right,
+            // Back right
+            self.pos - to_front + to_right,
+            // Back left
+            self.pos - to_front - to_right,
+        ]
     }
 }
 
@@ -355,9 +391,9 @@ impl Racetrack {
 
         let initial_car_state = Car {
             pos: start_car_pos,
-            // Currently, the car will always start pointing upwards. This could be something we'd
-            // like to configure in the future, but it's not necessary yet.
-            angle: 180_f32,
+            // Currently, the car will always start pointing downwards. This could be something
+            // we'd like to configure in the future, but it's not necessary yet.
+            angle: 3.0 * PI / 2.0,
             // The car always starts at a standstill - another thing that could be changed but
             // probably doesn't need to be
             speed: 0_f32,
