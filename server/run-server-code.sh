@@ -4,7 +4,10 @@
 # to use port 8000, so we're using that here. This script might break if that
 # changes
 
-cargo run &
+set -e
+
+cargo build
+target/debug/ai-racing-server &
 
 server_pid=$!
 
