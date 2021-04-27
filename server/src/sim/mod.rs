@@ -202,16 +202,18 @@ impl Simulation {
                 };
                 let base_is_underneath = is_underneath(point);
 
-                // Now need to work out which neighbours are on the same side of the square to check to see if they're inside
+                // Now need to work out which neighbours are on the same side of the square to
+                // check to see if they're inside
+                let tile_size = self.track.tile_size;
                 let center = Point {
-                    x: point.x.floor() + 0.5,
-                    y: point.y.floor() + 0.5,
+                    x: ((point.x / tile_size).floor() + 0.5) * tile_size,
+                    y: ((point.y / tile_size).floor() + 0.5) * tile_size,
                 };
 
-                let up = center.add_y(1.0);
-                let left = center.add_x(-1.0);
-                let down = center.add_y(-1.0);
-                let right = center.add_x(1.0);
+                let up = center.add_y(tile_size);
+                let left = center.add_x(-tile_size);
+                let down = center.add_y(-tile_size);
+                let right = center.add_x(tile_size);
 
                 let on_inside = [up, left, down, right].iter().cloned().any(|p| {
                     is_underneath(p) == base_is_underneath && self.track.get_tile(p).is_inside()
