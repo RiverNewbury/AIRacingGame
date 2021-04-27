@@ -146,11 +146,11 @@ const CAR_MAX_TURNING_SPEED: f32 = 4.0 * PI / 3.0 / TICKS_PER_SECOND as f32;
 
 impl Car {
     pub fn max_acc(&self) -> f32 {
-        (1.0 - self.speed / self.max_speed) * CAR_MAX_ACC
+        (1.0 - self.speed) * CAR_MAX_ACC
     }
 
     pub fn max_dec(&self) -> f32 {
-        (self.speed / self.max_speed) * CAR_MAX_DEC
+        self.speed * CAR_MAX_DEC
     }
 
     pub fn pos_of_corners(&self) -> Vec<Point> {
