@@ -8,7 +8,7 @@
 //! This module doesn't perform any interaction with user-submitted code. Currently-running
 //! simulations are represented by the [`Simulation`] type, and are updated there.
 
-use super::Point;
+use super::{Point, TICKS_PER_SECOND};
 use pyo3::prelude::pyclass;
 use serde::Serialize;
 use std::collections::HashSet;
@@ -135,11 +135,14 @@ pub struct Car {
     pub max_turn: f32,
 }
 
-// Arbitrary variables
-const CAR_MAX_SPEED: f32 = 10.0;
-const CAR_MAX_ACC: f32 = 2.0;
-const CAR_MAX_DEC: f32 = 2.0;
-const CAR_MAX_TURNING_SPEED: f32 = PI / 18.0; // equivalent to 10°
+// Car speed constants, in terms of the change per tick. As such, each parameter is first relative
+// to the values PER SECOND, and then divides by the number of ticks in a second.
+//
+// Acceleration is additionally relative to the maximum speed.
+const CAR_MAX_SPEED: f32 = 10.0 / TICKS_PER_SECOND as f32;
+const CAR_MAX_ACC: f32 = 0.5 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
+const CAR_MAX_DEC: f32 = 0.3 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
+const CAR_MAX_TURNING_SPEED: f32 = 4.0 * PI / 3.0 / TICKS_PER_SECOND as f32;
 
 impl Car {
     pub fn max_acc(&self) -> f32 {

@@ -8,4 +8,4 @@ class CarCommand:
         self.turning_speed = turning_speed
 
 def outputs(env):
-    return CarCommand(acc = 0.1, turning_speed = 0.1)
+    return CarCommand(acc = 1.0, turning_speed = 0.0)
