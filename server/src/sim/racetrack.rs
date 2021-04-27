@@ -48,7 +48,7 @@ pub struct Racetrack {
     pub laps: i32,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, Serialize)]
 pub enum GridTile {
     /// A tile on the edge of the track. `border` gives two points that this edge of the
     /// racetrack passes through - the side of the border that's inside the racetrack can be

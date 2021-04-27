@@ -56,11 +56,21 @@ fn get_leaderboard(n: usize) -> RequestResult<Vec<LeaderboardEntry>> {
     Ok(Json(entries))
 }
 
+#[get("/tileinfo/<x>/<y>")]
+fn get_tile_info(x: f32, y: f32) -> RequestResult<sim::GridTile> {
+    if x >= RACETRACK.width as f32 || y >= RACETRACK.height as f32 {
+        return Err(BadRequest(Some("coordinates out of bounds".to_owned())));
+    }
+
+    let point = sim::Point { x, y };
+    Ok(Json(RACETRACK.get_tile(point).clone()))
+}
+
 fn main() {
     lazy_static::initialize(&RACETRACK);
     lazy_static::initialize(&LEADERBOARD);
 
     rocket::ignite()
-        .mount("/", routes![exec_user_code, get_leaderboard])
+        .mount("/", routes![exec_user_code, get_leaderboard, get_tile_info])
         .launch();
 }
