@@ -44,10 +44,7 @@ fn exec_user_code(username: String, source_code: String) -> RequestResult<Simula
         .expect("leaderboard mutex already poisoned!")
         .add(username, source_code, score);
 
-    Ok(Json(SimulationData {
-        history: history,
-        score: score,
-    }))
+    Ok(Json(SimulationData { history, score }))
 }
 
 #[get("/leaderboard/<n>")]
