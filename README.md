@@ -30,31 +30,31 @@
 
 ## Time Plan
  - River
-  - <del>Finish the work on Exec Environment</del>
-  - <del>Treat car as a rectangle as opposed to a point</del>
-  - Work out how the acceleration curves for the car should work (turb vs not)
-  - Come up with a more complex damage system for the car
-  - Research into gears and Drifting
+   - <del>Finish the work on Exec Environment</del>
+   - <del>Treat car as a rectangle as opposed to a point</del>
+   - Work out how the acceleration curves for the car should work (turb vs not)
+   - Come up with a more complex damage system for the car
+   - Research into gears and Drifting
 
 
  - Beth
-  - <del>Get initial implementation of leader board done</del>
-  - Add in scene transitions
-  - Add in way of visualising lap finish/crash
-  - Work out how the FE wants to receive the racetrack
+   - <del>Get initial implementation of leader board done</del>
+   - Add in scene transitions
+   - Add in way of visualising lap finish/crash
+   - Work out how the FE wants to receive the racetrack
 
  - Max
-  - Finish coding + Merge the python scripting language branch with the main branch
-  - Add functionality on server side to send out the racetrack
-  - Do a terrible initial example of a racecar AI to demonstrate it working
+   - <del>Finish coding scripting language branch</del>
+   - Add functionality on server side to send out the racetrack
+   -<del> Do a terrible initial example of a racecar AI to demonstrate it working</del>
 
  - Luca
-  - Finish off the server facing bit of the front end
-  - Help beth with the server facing part of the client
+   - Finish off the server facing bit of the front end
+   - Help beth with the server facing part of the client
 
  - General Front end
-  - Improve visuals : make the car not a sphere + add skins for car?
-  - Market research
+   - Improve visuals : make the car not a sphere + add skins for car?
+   - Market research
 
  - General Back End
-  - Do docs for scripting language
+   - Do docs for scripting language
