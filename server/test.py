@@ -8,4 +8,12 @@ class CarCommand:
         self.turning_speed = turning_speed
 
 def outputs(env):
-    return CarCommand(acc = 1.0, turning_speed = -0.1)
+    best_i = -1
+    max_d = -1
+    for i, d in enumerate(env.dist_to_wall):
+        if d > max_d:
+            best_i = i
+            max_d = d
+
+    dist_len = len(env.dist_to_wall)
+    return CarCommand(acc = 1.0, turning_speed = 2 * (i / (dist_len - 1)) - 1)
