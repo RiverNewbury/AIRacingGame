@@ -6,7 +6,7 @@ mod point;
 mod racetrack;
 
 pub use point::Point;
-pub use racetrack::{Car, GridTile, Racetrack, CAR_LENGTH, CAR_WIDTH};
+pub use racetrack::{Car, GridTile, Racetrack, CAR_LENGTH, CAR_MAX_SPEED, CAR_WIDTH};
 
 // A tick is the unit on which thte simulation will update the world
 const TICKS_PER_SECOND: i32 = 100;
@@ -178,7 +178,7 @@ impl Simulation {
         let car = &self.car;
         let actual_acc = acc * car.max_acc();
 
-        (car.speed + actual_acc).min(car.max_speed)
+        (car.speed + actual_acc).min(CAR_MAX_SPEED)
     }
 
     // TODO - Probably should use more advanced line system

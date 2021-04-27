@@ -120,29 +120,15 @@ pub struct Car {
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
     pub speed: f32,
-
-    /// The maximum speed of the car in units per tick
-    #[serde(skip)]
-    pub max_speed: f32,
-    //    /// The maximum acceleration of the car
-    //    #[serde(skip)]
-    //    pub max_acc: f32,
-    //    /// The maximum deceleration of the car
-    //    #[serde(skip)]
-    //    pub max_dec: f32,
-    // The maximum turning speed of the car in radians per tick
-    #[serde(skip)]
-    pub max_turn: f32,
 }
 
 // Car speed constants, in terms of the change per tick. As such, each parameter is first relative
 // to the values PER SECOND, and then divides by the number of ticks in a second.
 //
 // Acceleration is additionally relative to the maximum speed.
-const CAR_MAX_SPEED: f32 = 10.0 / TICKS_PER_SECOND as f32;
+pub const CAR_MAX_SPEED: f32 = 10.0 / TICKS_PER_SECOND as f32;
 const CAR_MAX_ACC: f32 = 0.5 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
 const CAR_MAX_DEC: f32 = 0.3 * CAR_MAX_SPEED / TICKS_PER_SECOND as f32;
-const CAR_MAX_TURNING_SPEED: f32 = 4.0 * PI / 3.0 / TICKS_PER_SECOND as f32;
 
 impl Car {
     pub fn max_acc(&self) -> f32 {
@@ -521,8 +507,6 @@ impl Racetrack {
             // The car always starts at a standstill - another thing that could be changed but
             // probably doesn't need to be
             speed: 0_f32,
-            max_speed: CAR_MAX_SPEED,
-            max_turn: CAR_MAX_TURNING_SPEED,
         };
 
         let width = initial_grid.width;
