@@ -44,6 +44,9 @@ impl Car {
     /// Like `CAR_MAX_ACC`, this also has linear scaling provided by [`max_dec`](Self::max_dec)
     const MAX_DEC: f32 = 0.3 * Car::MAX_SPEED / TICKS_PER_SECOND as f32;
 
+    /// The maximum allowed wheel angle when the car is at its maximum speed
+    const MAX_WHEEL_ANGLE_AT_SPEED: f32 = 0.2;
+
     /// The maximum acceleration of the car, scaled so that the maximum allowed acceleration
     /// approaches zero as the car's speed approaches `MAX_SPEED`
     pub fn max_acc(&self) -> f32 {
@@ -54,6 +57,12 @@ impl Car {
     /// approaches zero as the car's speed approaches zero
     pub fn max_dec(&self) -> f32 {
         self.speed / Self::MAX_SPEED * Self::MAX_DEC
+    }
+
+    /// The current maximum allowed wheel angle, scaling linearly from 1 to
+    /// `MAX_WHEEL_ANGLE_AT_SPEED` as the speed of the car approaches `MAX_SPEED`
+    fn max_wheel_angle(&self) -> f32 {
+        1.0 - (self.speed / Self::MAX_SPEED) * (1.0 - Self::MAX_WHEEL_ANGLE_AT_SPEED)
     }
 
     pub fn pos_of_corners(&self) -> Vec<Point> {
@@ -116,7 +125,8 @@ impl Car {
     /// The wheel angle will be clamped to between -1 and 1, where -1 is all the way to the left
     /// and 1 is all the way to the right.
     pub fn update_state(&mut self, distance: f32, mut wheel_angle: f32) {
-        wheel_angle = wheel_angle.clamp(-1.0, 1.0);
+        let max_angle = self.max_wheel_angle();
+        wheel_angle = wheel_angle.clamp(-max_angle, max_angle);
 
         // This wheel angle isn't very useful right now. We'll put it into radians, from -pi/2 to
         // pi/2:
