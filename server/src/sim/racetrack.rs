@@ -112,7 +112,7 @@ pub const NUM_LAPS: i32 = 1;
 /// All of the information about the car at a particular point in time
 // TODO - added debug for ex result
 #[pyclass]
-#[derive(Copy, Clone, Serialize, Debug)]
+#[derive(Clone, Serialize, Debug)]
 pub struct Car {
     /// The position of the car
     pub pos: Point,

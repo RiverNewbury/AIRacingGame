@@ -85,7 +85,7 @@ impl Simulation {
         }
 
         ExecEnvironment {
-            car_currently: self.car,
+            car_currently: self.car.clone(),
             dist_to_wall: dists,
         }
     }
@@ -175,7 +175,7 @@ impl Simulation {
 
     //TODO: Research air resistance
     fn speed_after_tick(&self, acc: f32) -> f32 {
-        let car = self.car;
+        let car = &self.car;
         let actual_acc = acc * car.max_acc();
 
         (car.speed + actual_acc).min(car.max_speed)
@@ -237,7 +237,7 @@ impl Simulation {
         assert!(CAR_WIDTH < 1.0);
 
         let mut hist = SimulationHistory {
-            history: vec![self.car],
+            history: vec![self.car.clone()],
             tps: TICKS_PER_SECOND,
         };
 
@@ -261,7 +261,7 @@ impl Simulation {
 
             self.car.pos += Point::new_polar(self.car.speed, self.car.angle);
 
-            hist.history.push(self.car);
+            hist.history.push(self.car.clone());
 
             let end_pos = self.car.pos_of_corners();
 
@@ -295,7 +295,7 @@ impl Simulation {
         Simulation {
             code,
             track,
-            car: track.initial_car_state,
+            car: track.initial_car_state.clone(),
             laps: 4 * track.laps,
         }
     }
