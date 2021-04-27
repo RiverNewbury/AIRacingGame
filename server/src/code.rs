@@ -42,16 +42,17 @@ pub struct ExecEnvironment {
 impl Code {
     /// Parses the user's code, returning any error as a string if there was one
     pub fn from_str(input: &str) -> Result<Code, String> {
+        let indented_input: String = input.lines().map(|l| format!("    {}\n", l)).collect();
+
         let code = format! {
 r#"
 def __user_main(env):
     {}
-
     return outputs(env)
 
 res = __user_main(__env)
 "#,
-            input,
+            indented_input,
         };
 
         Ok(Code { code })
