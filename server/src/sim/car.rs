@@ -228,7 +228,7 @@ impl Car {
         // position, which starts at zero.
 
         // use t, x, y as shorthands so this looks cleaner:
-        let t = self.angle;
+        let t = self.angle - (PI / 2.0);
         let Point { x, y } = unrotated_pos_shift;
 
         let pos_change = Point {
