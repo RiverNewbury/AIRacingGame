@@ -9,6 +9,7 @@
 //! simulations are represented by the [`Simulation`] type, and are updated there.
 
 use super::Point;
+use pyo3::prelude::pyclass;
 use serde::Serialize;
 use std::collections::HashSet;
 
@@ -109,6 +110,7 @@ pub const NUM_LAPS: i32 = 1;
 
 /// All of the information about the car at a particular point in time
 // TODO - added debug for ex result
+#[pyclass]
 #[derive(Copy, Clone, Serialize, Debug)]
 pub struct Car {
     /// The position of the car

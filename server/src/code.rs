@@ -7,7 +7,8 @@
 //!   user code to handle that
 //! * User code is not restricted in what it does; filesystem access, for example, is allowed
 
-use pyo3::prelude::{pyclass, FromPyObject, Py, Python};
+use pyo3::class::basic::PyObjectProtocol;
+use pyo3::prelude::{pyclass, pyproto, FromPyObject, Py, PyResult, Python};
 use pyo3::types::PyDict;
 
 pub use crate::sim::{Car, Point};
@@ -32,12 +33,33 @@ pub struct Output {
 /// car in its race
 // TODO - Consider if this is actually what we want
 #[pyclass]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ExecEnvironment {
+    #[pyo3(get)]
     pub car_currently: Car, // Gives current information about the car
+    #[pyo3(get)]
     pub dist_to_wall: Vec<f32>, // Gives you the distance to the wall at regular intervals of angle starting from 0
                                 // IE if there were 2 elements that'd mean one at 0 deg and one at 180 deg
 }
+
+macro_rules! impl_format {
+    ($($ty:ty),*) => {
+        $(
+        #[pyproto]
+        impl pyo3::class::basic::PyObjectProtocol for $ty {
+            fn __str__(&self) -> PyResult<String> {
+                Ok(format!("{:?}", self))
+            }
+
+            fn __format__(&self, _format_spec: &str) -> PyResult<String> {
+                Ok(format!("{:?}", self))
+            }
+        }
+        )*
+    }
+}
+
+impl_format!(ExecEnvironment, Car, Point);
 
 impl Code {
     /// Parses the user's code, returning any error as a string if there was one
@@ -65,7 +87,6 @@ res = __user_main(__env)
         let py = gil.python();
 
         let locals = PyDict::new(py);
-        // TODO: Set the environment
         let env_obj = Py::new(py, env.clone()).map_err(|e| e.to_string())?;
         locals
             .set_item("__env", env_obj)
