@@ -63,7 +63,7 @@ fn get_tile_info(x: f32, y: f32) -> RequestResult<sim::GridTile> {
     }
 
     let point = sim::Point { x, y };
-    Ok(Json(RACETRACK.get_tile(point).clone()))
+    Ok(Json(RACETRACK.get_tile(point)))
 }
 
 fn main() {

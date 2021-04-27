@@ -349,8 +349,8 @@ impl Racetrack {
     fn make(initial_grid: InitialGrid, tile_size: f32) -> Result<Self, String> {
         // We start the car at the center of the tile, so we need to add 0.5 for its center
         let start_car_pos = Point {
-            x: initial_grid.start_tile.0 as f32 + 0.5 * tile_size,
-            y: initial_grid.start_tile.1 as f32 + 0.5 * tile_size,
+            x: initial_grid.start_tile.0 as f32 * tile_size + 0.5 * tile_size,
+            y: initial_grid.start_tile.1 as f32 * tile_size + 0.5 * tile_size,
         };
 
         let initial_car_state = Car {
@@ -533,8 +533,8 @@ impl Racetrack {
 
                 // The bottom-left corner
                 let bot_left = Point {
-                    x: (x as f32) * tile_size,
-                    y: (y as f32) * tile_size,
+                    x: x as f32 * tile_size,
+                    y: y as f32 * tile_size,
                 };
                 let bot_right = bot_left.add_x(tile_size);
                 let top_left = bot_left.add_y(tile_size);
@@ -663,12 +663,13 @@ impl Racetrack {
         })
     }
 
-    /// Produces a reference to the tile containing the given point
+    /// Produces a copy of the tile containing the given point
     ///
     /// ## Panics
     ///
     /// Panics if the point is outside the range of the bounds of the racetrack
-    pub fn get_tile(&self, p: Point) -> &GridTile {
-        &self.grid[p.y as usize][p.x as usize]
+    pub fn get_tile(&self, mut p: Point) -> GridTile {
+        p /= self.tile_size;
+        self.grid[p.y as usize][p.x as usize]
     }
 }

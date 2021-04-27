@@ -188,7 +188,7 @@ impl Simulation {
 
     // TODO - Probably should use more advanced line system
     fn in_bounds(&self, point: Point) -> bool {
-        let square = self.track.grid[point.x as usize][point.y as usize];
+        let square = self.track.get_tile(point);
         match square {
             GridTile::Outside => false,
             GridTile::Inside { .. } => true,
