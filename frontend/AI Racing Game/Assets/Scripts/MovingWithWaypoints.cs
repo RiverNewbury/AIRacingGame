@@ -89,7 +89,7 @@ public class MovingWithWaypoints : MonoBehaviour
                 //EndingText.Find("TimeOrCrashed").GetComponent<Text>().SetActive(true);
                 IEnumerator LoadLevelAfterDelay(){
                 yield return new WaitForSeconds(7);
-                SceneManager.LoadScene(sceneName:"GameScene_Highscore Table");
+                SceneManager.LoadScene(sceneName:"GameScene_HighscoreTable");
                 }
                 LoadLevelAfterDelay();
                 this.enabled = false;//don't know if this is necessary
