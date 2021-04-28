@@ -29,4 +29,4 @@ def outputs(env):
          turn = 0.2
 
     dist_len = len(env.dist_to_wall)
-    return CarCommand(acc = 1, turning_speed = turn)
+    return CarCommand(acc = 1, turning_speed = 0)

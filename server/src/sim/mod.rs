@@ -20,6 +20,9 @@ const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
 const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
 const NUMBER_ANGLES_TO_CHECK: usize = 60;
+// Emergency Tick Limit
+const TICK_LIMIT: i32 = 10000;
+
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -243,7 +246,8 @@ impl Simulation {
         let mut action = self.code.execute(&self.make_environment())?;
         let mut passed_finish = false;
 
-        while !passed_finish {
+        //TODO do this in the code.rs
+        while !passed_finish && (ticks < TICK_LIMIT){
             // Here, we additionally check if ticks != 0 because it's the initial value of `action`
             if ticks % TICKS_PER_UPDATE == 0 && ticks != 0 {
                 action = self.code.execute(&self.make_environment())?;
@@ -285,7 +289,7 @@ impl Simulation {
         }
 
         let score = Score {
-            successful: true,
+            successful: passed_finish,
             time: ticks,
         };
 
