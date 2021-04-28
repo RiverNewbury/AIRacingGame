@@ -28,21 +28,21 @@ public class sendCode : MonoBehaviour
 
 	public void SendCode()
 	{
-		WWWForm form = new WWWForm();
-		form.AddField("source_code", codeField.text);
-		if (usernameField.text == ""){Debug.Log("No username");}
-		else{
-		UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, form);
-		postRequest.SendWebRequest();
-
-		if (postRequest.result != UnityWebRequest.Result.Success) {
-			Debug.Log(postRequest.error);
+		if (usernameField.text == "") {
+			Debug.Log("No username");
 		} else {
-			Debug.Log("Post request successful");
+			UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, codeField.text);
+			postRequest.SendWebRequest();
 
-			infoObject.ParseHistory(postRequest.downloadHandler.text);
-			SceneManager.LoadScene(sceneName:"CarSimulation");
-		}
+			//if (postRequest.result != UnityWebRequest.Result.Success) {
+				//Debug.Log(postRequest.error);
+			//} else {
+				//Debug.Log("Post request successful");
+				Debug.Log(postRequest.downloadHandler.text);
+
+				infoObject.ParseHistory(postRequest.downloadHandler.text);
+				SceneManager.LoadScene(sceneName:"CarSimulation");
+			//}
 		}
 	}
 }
