@@ -44,6 +44,7 @@ public class MovingWithWaypoints : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        transform.position = new Vector3(-3.53f,0.05f,-2);
         //EndingText = GameObject.Find("TimeOrCrashed");
         infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
         SimulationData simData = infoObject.simulationData;
