@@ -31,7 +31,7 @@ pub struct Racetrack {
     pub width: usize,
 
     /// Rows of grid tiles. The tile at `grid[i][j]` covers the rectangle
-    /// `(i*tile_size, j*tile_size)` to `((i + 1)*tile_size, (j + 1)*tile_size)`.
+    /// `(j*tile_size, i*tile_size)` to `((j + 1)*tile_size, (i + 1)*tile_size)`.
     pub grid: Vec<Vec<GridTile>>,
 
     /// The starting state of the car
@@ -460,6 +460,10 @@ impl Racetrack {
                     }
                 }
 
+                if most_clockwise == Left && up_outside {
+                    most_clockwise = Up;
+                }
+
                 // The bottom-left corner
                 let bot_left = Point {
                     x: x as f32 * tile_size,
@@ -600,5 +604,167 @@ impl Racetrack {
     pub fn get_tile(&self, mut p: Point) -> GridTile {
         p /= self.tile_size;
         self.grid[p.y as usize][p.x as usize]
+    }
+
+    /// Helper function to display the bounds of the racetrack in more detail
+    ///
+    /// Used for debugging.
+    #[cfg(test)]
+    pub fn display_bounds<'a>(&'a self) -> impl 'a + std::fmt::Display {
+        use std::fmt::{self, Display, Formatter};
+
+        struct BoundsDisplay<T>(T);
+
+        impl<'a> Display for BoundsDisplay<&'a Racetrack> {
+            fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+                for (i, row) in self.0.grid.iter().enumerate().rev() {
+                    for (j, &tile) in row.iter().enumerate() {
+                        let p = Point {
+                            x: j as f32,
+                            y: i as f32,
+                        } * self.0.tile_size;
+                        BoundsDisplay((tile, p)).fmt(f)?;
+                    }
+
+                    f.write_str("\n")?;
+                }
+                Ok(())
+            }
+        }
+
+        // The implementation of Display is on a gridtile, paired with the position of its
+        // bottom-left corner.
+        impl<'a> Display for BoundsDisplay<(GridTile, Point)> {
+            fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+                // Helper method for approximate floating-point equality, bounded by a small
+                // epsilon
+                let f_eq = |x: f32, y: f32| -> bool {
+                    const EPSILON: f32 = 2.0 / 1000.0;
+                    (x - y).abs() < EPSILON
+                };
+
+                let (tile, bottom_left) = self.0;
+
+                // The only complex case here is with `GridTile::Border`
+                let (p1, p2) = match tile {
+                    GridTile::Inside { .. } => return f.write_str(" "),
+                    GridTile::Outside => return f.write_str("X"),
+                    GridTile::Border { border, .. } => border,
+                };
+
+                // There's essentially 6 possible options for the border:
+                //  * top,
+                //  * bottom,
+                //  * left,
+                //  * right,
+                //  * bottom-left to top-right diagonal, and
+                //  * top-left to bottom-right diagonal.
+                // So we'll go through the conditions for each one in turn.
+
+                let is_horiz = f_eq(p1.y, p2.y);
+                let is_vert = f_eq(p1.x, p2.x);
+
+                let repr = if is_horiz && p1.y > bottom_left.y {
+                    // Top
+                    "╨"
+                } else if is_horiz {
+                    assert!(
+                        f_eq(p1.y, bottom_left.y),
+                        "bottom_left: {:?}, p1: {:?}, p2: {:?}",
+                        bottom_left,
+                        p1,
+                        p2
+                    );
+                    // Bottom
+                    "╥"
+                } else if is_vert && p1.x > bottom_left.x {
+                    // Right
+                    "╞"
+                } else if is_vert {
+                    assert!(f_eq(p1.x, bottom_left.x));
+                    // Left
+                    "╡"
+                } else if (p1.x > p2.x) == (p1.y > p2.y) {
+                    // bottom-left to top-right
+                    "╱"
+                } else {
+                    // top-left to bottom-right
+                    "╲"
+                };
+
+                f.write_str(repr)
+            }
+        }
+
+        BoundsDisplay(self)
+    }
+}
+
+// Testing for racetrack construction
+#[cfg(test)]
+mod tests {
+    use super::Racetrack;
+
+    // Helper function to format the output in the case that it's not equal
+    fn assert_strings_eq(expected: &str, given: &str) {
+        if expected != given {
+            panic!(
+                "expected string != given; expected = '''\n{}''', given = '''\n{}'''",
+                expected, given,
+            );
+        }
+    }
+
+    // Strips the indentation from the string, alongside a leading newline
+    fn strip_indents(mut s: &str) -> String {
+        s = s.strip_prefix('\n').unwrap_or(s);
+        s.split_inclusive('\n')
+            .map(|l| l.trim_start_matches(' '))
+            .collect()
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn simple_circle() {
+        let input = strip_indents("
+        +-------------------+
+        |xxxxxxxxxxxxxxxxxxx|
+        |xxxx          xxxxx|
+        |xxx             xxx|
+        |xx               xx|
+        |x    xxxxxxxxx   xx|
+        |x   xxxxxxxxxxx   x|
+        |x*s*xxxxxxxxxxx   x|
+        |x   xxxxxxxxxxx   x|
+        |x    xxxxxxxxx    x|
+        |xx               xx|
+        |xxx             xxx|
+        |xxxx           xxxx|
+        |xxxxxxxxxxxxxxxxxxx|
+        +-------------------+
+        ");
+
+        let output = Racetrack::from_str(&input)
+            .unwrap()
+            .display_bounds()
+            .to_string();
+
+        let expected = strip_indents("
+        XXXXXXXXXXXXXXXXXXX
+        XXXX╱╨╨╨╨╨╨╨╨╲XXXXX
+        XXX╱          ╨╲XXX
+        XX╱  ╥╥╥╥╥╥╥╥╥  ╲XX
+        X╱  ╱XXXXXXXXX╲ ╞XX
+        X╡ ╞XXXXXXXXXXX╡ ╲X
+        X╡ ╞XXXXXXXXXXX╡ ╞X
+        X╡ ╞XXXXXXXXXXX╡ ╞X
+        X╲  ╲XXXXXXXXX╱  ╱X
+        XX╲  ╨╨╨╨╨╨╨╨╨  ╱XX
+        XXX╲           ╱XXX
+        XXXX╲╥╥╥╥╥╥╥╥╥╱XXXX
+        XXXXXXXXXXXXXXXXXXX
+        ");
+
+        assert_strings_eq(&expected, &output);
     }
 }
