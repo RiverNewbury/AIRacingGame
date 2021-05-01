@@ -49,7 +49,7 @@
    -<del> Do a terrible initial example of a racecar AI to demonstrate it working</del>
 
  - Luca
-   - Finish off the server facing bit of the front end
+   - <del>Finish off the server facing bit of the front end</del>
    - Help beth with the server facing part of the client
 
  - General Front end
