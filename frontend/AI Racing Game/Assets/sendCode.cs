@@ -41,15 +41,15 @@ public class sendCode : MonoBehaviour
 				wait = new WaitForSeconds(0.1f);
 			}
 
-			//if (postRequest.result != UnityWebRequest.Result.Success) {
-				//Debug.Log(postRequest.error);
-			//} else {
-				//Debug.Log("Post request successful");
+			if (postRequest.result != UnityWebRequest.Result.Success) {
+				Debug.Log(postRequest.error);
+			} else {
+				Debug.Log("Post request successful");
 				Debug.Log(postRequest.downloadHandler.text);
 
 				infoObject.ParseHistory(postRequest.downloadHandler.text);
 				SceneManager.LoadScene(sceneName:"CarSimulation");
-			//}
+			}
 		}
 	}
 }
