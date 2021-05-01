@@ -46,7 +46,7 @@ public class MovingWithWaypoints : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        transform.position = new Vector3(-3.53f,0.05f,-1);
+        transform.position = new Vector3(-7.4f,0.3f,-1);
         //EndingText = GameObject.Find("TimeOrCrashed");
         infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
         SimulationData simData = infoObject.simulationData;
@@ -79,7 +79,7 @@ public class MovingWithWaypoints : MonoBehaviour
         current++;
         if (current >= swpl)
         {
-                if (!score.succesful){
+                if (!score.successful){
                     Debug.Log("crashed");
                     //MWW.Find("Circle").GetComponent<SpriteRenderer>().color = UtilsClass.GetColorFromString("FF0000");
                 }
