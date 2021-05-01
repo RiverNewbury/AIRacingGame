@@ -37,11 +37,22 @@ public struct SimulationData {
 	public Score score;
 }
 
+[Serializable]
+public struct LeaderboardEntry {
+	public string username;
+	public Score score;
+}
+
+[Serializable]
+public struct LeaderboardData {
+	public LeaderboardEntry[] entries;
+}
+
 public class InfoObject : MonoBehaviour
 {
-	//static public History history;
-	//static public Score score;
 	public SimulationData simulationData;
+	public LeaderboardData leaderboardData;
+	public int n_entries;//this is not necessary the total amount fetched, only the amount requested. "simulationData.entries.Length" will get the actual number for you
 	public string serverAddress;
 
 	void Awake()
@@ -50,8 +61,15 @@ public class InfoObject : MonoBehaviour
 	}
 
 	// turn JSON string into data stored in this object
-	public void ParseHistory(string historyJson)
+	public void ParseHistory(string json)
 	{
-		simulationData = JsonUtility.FromJson<SimulationData>(historyJson);
+		simulationData = JsonUtility.FromJson<SimulationData>(json);
+	}
+	
+	// turn JSON string into data stored in this object
+	public void ParseLeaderboard(string json, int n)
+	{
+		leaderboardData = JsonUtility.FromJson<LeaderboardData>("{\"entries\":" + json + "}");
+		n_entries = n;
 	}
 }
