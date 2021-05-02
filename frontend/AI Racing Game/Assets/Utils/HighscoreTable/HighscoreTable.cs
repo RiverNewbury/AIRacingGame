@@ -44,7 +44,8 @@ public class HighscoreTable : MonoBehaviour {
             AddHighscoreEntry(roundedScore, name);
         } 
         
-
+	jsonString = PlayerPrefs.GetString("highscoreTable");
+        highscores = JsonUtility.FromJson<Highscores>(jsonString);
         //if (highscores == null) {
             // There's no stored table, initialize
         //    Debug.Log("Test values without json file");
@@ -102,6 +103,7 @@ int rank = transformList.Count + 1;
         entryTransform.Find("scoreText").GetComponent<Text>().text = Math.Round(score,1).ToString();
 
         string name = highscoreEntry.name;
+        name = name.ToUpper();
         entryTransform.Find("nameText").GetComponent<Text>().text = name;
 
         // Set background visible odds and evens, easier to read
