@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +10,17 @@ public class HighscoreTable : MonoBehaviour {
     private Transform entryContainer;
     private Transform entryTemplate;
     private List<Transform> highscoreEntryTransformList;
+    private InfoObject infoObject;
+    public SimulationData simData;
+    public Score score;
+    public History History;
+    public LeaderboardData LBData;
+    public LeaderboardEntry[] LBList;
 
     private void Awake() {
         entryContainer = transform.Find("highscoreEntryContainer");
         entryTemplate = entryContainer.Find("highscoreEntryTemplate");
-
+        infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
         entryTemplate.gameObject.SetActive(false);
         string json = JsonUtility.ToJson(null);
         //json file not currently set up correctly, but it'll do for now
@@ -22,21 +29,35 @@ public class HighscoreTable : MonoBehaviour {
 
         string jsonString = PlayerPrefs.GetString("highscoreTable");
         Highscores highscores = JsonUtility.FromJson<Highscores>(jsonString);
+        SimulationData simData = infoObject.simulationData;
+        History = simData.history;
+        int tps = History.tps;
+        LeaderboardData LBData = infoObject.leaderboardData;
+        LBList = LBData.entries;
+        for (int i=0; i<LBList.Length; i++)
+        {
+            string username = LBList[i].username;
+            string name = username.Substring(0, Math.Min(username.Length,3));
+            score = LBList[i].score;
+            int time = score.time;
+            float roundedScore = time / (float)tps;
+            AddHighscoreEntry(roundedScore, name);
+        } 
         
 
-        if (highscores == null) {
+        //if (highscores == null) {
             // There's no stored table, initialize
-            Debug.Log("Test values without json file");
-            AddHighscoreEntry(10, "BET");
-            AddHighscoreEntry(1, "RIV");
-            AddHighscoreEntry(2100, "DAV");
-            AddHighscoreEntry(728323, "ABE");
-            AddHighscoreEntry(54, "MAX");
-            AddHighscoreEntry(65, "LUC");
+        //    Debug.Log("Test values without json file");
+        //    AddHighscoreEntry(10, "BET");
+        //    AddHighscoreEntry(1, "RIV");
+        //    AddHighscoreEntry(2100, "DAV");
+        //    AddHighscoreEntry(728323, "ABE");
+        //    AddHighscoreEntry(54, "MAX");
+        //    AddHighscoreEntry(65, "LUC");
             // Reload
-            jsonString = PlayerPrefs.GetString("highscoreTable");
-            highscores = JsonUtility.FromJson<Highscores>(jsonString);
-        }
+        //    jsonString = PlayerPrefs.GetString("highscoreTable");
+        //    highscores = JsonUtility.FromJson<Highscores>(jsonString);
+        //}
 
         // Sort entry list by Score
         for (int i = 0; i < highscores.highscoreEntryList.Count; i++) {
@@ -76,9 +97,9 @@ public class HighscoreTable : MonoBehaviour {
 
         entryTransform.Find("posText").GetComponent<Text>().text = rankString;
 
-        int score = highscoreEntry.score;
+        float score = highscoreEntry.score;
 
-        entryTransform.Find("scoreText").GetComponent<Text>().text = score.ToString();
+        entryTransform.Find("scoreText").GetComponent<Text>().text = Math.Round(score,1).ToString();
 
         string name = highscoreEntry.name;
         entryTransform.Find("nameText").GetComponent<Text>().text = name;
@@ -113,7 +134,7 @@ public class HighscoreTable : MonoBehaviour {
         transformList.Add(entryTransform);
     }
 
-    private void AddHighscoreEntry(int score, string name) {
+    private void AddHighscoreEntry(float score, string name) {
         // Create HighscoreEntry
         HighscoreEntry highscoreEntry = new HighscoreEntry { score = score, name = name };
         
@@ -147,7 +168,7 @@ public class HighscoreTable : MonoBehaviour {
      * */
     [System.Serializable] 
     private class HighscoreEntry {
-        public int score;
+        public float score;
         public string name;
     }
 
