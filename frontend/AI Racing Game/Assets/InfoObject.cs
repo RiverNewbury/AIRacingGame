@@ -4,6 +4,7 @@ using UnityEngine;
 
 using System;
 using System.Numerics;
+using UnityEngine.Networking;
 
 [Serializable]
 public struct Score {
@@ -52,8 +53,9 @@ public class InfoObject : MonoBehaviour
 {
 	public SimulationData simulationData;
 	public LeaderboardData leaderboardData;
-	public int n_entries;//this is not necessary the total amount fetched, only the amount requested. "simulationData.entries.Length" will get the actual number for you
+	public int nLeaderboardEntries = 10;//this is not necessary the total amount fetched, only the amount requested. "simulationData.entries.Length" will get the actual number for you
 	public string serverAddress;
+	public bool leaderboardFetched = false;
 
 	void Awake()
 	{
@@ -70,6 +72,30 @@ public class InfoObject : MonoBehaviour
 	public void ParseLeaderboard(string json, int n)
 	{
 		leaderboardData = JsonUtility.FromJson<LeaderboardData>("{\"entries\":" + json + "}");
-		n_entries = n;
+		leaderboardFetched = true;
+	}
+
+	public LeaderboardData GetLeaderboard() 
+	{
+		UnityWebRequest getRequest = UnityWebRequest.Get(serverAddress + ":8000/leaderboard/" + nLeaderboardEntries);
+		getRequest.SendWebRequest();
+
+		// wait for response
+		WaitForSeconds wait;
+		while (!getRequest.isDone) { 
+			wait = new WaitForSeconds(0.1f);
+		}
+
+
+		if (getRequest.result != UnityWebRequest.Result.Success) {
+			Debug.Log(getRequest.error);
+		} else {
+			Debug.Log("Get request succesful");
+			Debug.Log(getRequest.downloadHandler.text);
+
+			this.ParseLeaderboard(getRequest.downloadHandler.text, nLeaderboardEntries);
+		}
+
+		return leaderboardData;
 	}
 }

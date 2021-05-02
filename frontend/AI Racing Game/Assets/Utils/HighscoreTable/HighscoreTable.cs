@@ -32,7 +32,7 @@ public class HighscoreTable : MonoBehaviour {
         SimulationData simData = infoObject.simulationData;
         History = simData.history;
         int tps = History.tps;
-        LeaderboardData LBData = infoObject.leaderboardData;
+        LeaderboardData LBData = infoObject.GetLeaderboard();
         LBList = LBData.entries;
         for (int i=0; i<LBList.Length; i++)
         {
@@ -58,15 +58,16 @@ public class HighscoreTable : MonoBehaviour {
         //    jsonString = PlayerPrefs.GetString("highscoreTable");
         //    highscores = JsonUtility.FromJson<Highscores>(jsonString);
         //}
-
-        // Sort entry list by Score
+	
+	
+	//// Sort entry list by Score
         for (int i = 0; i < highscores.highscoreEntryList.Count; i++) {
             for (int j = i + 1; j < highscores.highscoreEntryList.Count; j++) {
                 if (highscores.highscoreEntryList[j].score < highscores.highscoreEntryList[i].score) {
                     // Swap
                     HighscoreEntry tmp = highscores.highscoreEntryList[i];
                     highscores.highscoreEntryList[i] = highscores.highscoreEntryList[j];
-                    highscores.highscoreEntryList[j] = tmp;
+                highscores.highscoreEntryList[j] = tmp;
                 }
             }
         }
@@ -83,8 +84,7 @@ public class HighscoreTable : MonoBehaviour {
         RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
         entryRectTransform.anchoredPosition = new Vector2(0, -templateHeight * transformList.Count);
         entryTransform.gameObject.SetActive(true);
-
-        int rank = transformList.Count + 1;
+int rank = transformList.Count + 1;
         string rankString;
         switch (rank) {
         default:
