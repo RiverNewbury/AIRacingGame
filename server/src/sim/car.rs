@@ -40,7 +40,7 @@ impl Car {
     /// speed approaches `MAX_SPEED`
     ///
     /// [`max_acc`]: Self::max_acc
-    const MAX_ACC: f32 = 0.5 * Car::MAX_SPEED / TICKS_PER_SECOND as f32;
+    const MAX_ACC: f32 = Car::MAX_SPEED / TICKS_PER_SECOND as f32;
 
     /// The maximum (backward) deceleration of the car, in units per tick, per tick
     ///
