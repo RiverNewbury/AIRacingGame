@@ -82,8 +82,9 @@ impl Simulation {
         let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
         let angle_delta = PI / (NUMBER_ANGLES_TO_CHECK as f32 - 1.0);
 
+        let base_angle = self.car.angle - (PI / 2.0);
         for i in (0..NUMBER_ANGLES_TO_CHECK).rev() {
-            dists.push(f(i as f32 * angle_delta))
+            dists.push(f(base_angle + i as f32 * angle_delta))
         }
 
         ExecEnvironment {
