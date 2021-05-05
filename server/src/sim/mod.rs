@@ -23,7 +23,6 @@ const NUMBER_ANGLES_TO_CHECK: usize = 60;
 // Emergency Tick Limit
 const TICK_LIMIT: i32 = 10000;
 
-
 // Almost all the computation will be done in the Simulation Object
 
 pub struct Simulation {
@@ -82,9 +81,9 @@ impl Simulation {
         let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
         let angle_delta = PI / (NUMBER_ANGLES_TO_CHECK as f32 - 1.0);
 
-        let base_angle = self.car.angle - (PI / 2.0);
+        let base_angle = self.car.angle + (PI / 2.0);
         for i in (0..NUMBER_ANGLES_TO_CHECK).rev() {
-            dists.push(f(base_angle + i as f32 * angle_delta))
+            dists.push(f(base_angle - i as f32 * angle_delta))
         }
 
         ExecEnvironment {
@@ -248,7 +247,7 @@ impl Simulation {
         let mut passed_finish = false;
 
         //TODO do this in the code.rs
-        while !passed_finish && (ticks < TICK_LIMIT){
+        while !passed_finish && (ticks < TICK_LIMIT) {
             // Here, we additionally check if ticks != 0 because it's the initial value of `action`
             if ticks % TICKS_PER_UPDATE == 0 && ticks != 0 {
                 action = self.code.execute(&self.make_environment())?;
