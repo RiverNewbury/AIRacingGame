@@ -133,7 +133,7 @@ impl Car {
 
         // This wheel angle isn't very useful right now. We'll put it into radians, from -pi/2 to
         // pi/2:
-        wheel_angle = wheel_angle * PI / 4.0;
+        wheel_angle = wheel_angle * PI / 2.0;
 
         // We're now dealing with a pretty complicated situation. Because this is so complicated,
         // we'll first figure out what the updated position of the car *would* be, if we started at
