@@ -107,7 +107,7 @@ const START_TILE_CHAR: char = 's';
 const FINISH_LINE_CHAR: char = '*';
 
 /// The original representation of a tile, as it was parsed
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 enum TileRepr {
     InBounds,
     OutOfBounds,
@@ -406,7 +406,7 @@ impl Racetrack {
                 }
 
                 // Record if it's part of the finish line
-                if let TileRepr::FinishLine = tile {
+                if tile == &TileRepr::FinishLine || tile == &TileRepr::Start {
                     finish_line_tiles.insert((x, y));
                 }
 
@@ -535,14 +535,19 @@ impl Racetrack {
 
         // The pair of points that define the finish line. For now, this is just the middle of the
         // left and right sides of the starting tile.
+        let start_tile_pos = Point {
+            x: initial_grid.start_tile.0 as f32 * tile_size,
+            y: initial_grid.start_tile.1 as f32 * tile_size,
+        };
+
         let finish_line = (
-            start_car_pos.add_x(-0.5 * tile_size),
-            start_car_pos.add_x(0.5 * tile_size),
+            start_tile_pos.add_x(-0.5 * tile_size),
+            start_tile_pos.add_x(0.5 * tile_size),
         );
 
         // We need to make sure that all of the finish-line tiles in the graph are accounted for in
         // this area of the graph.
-        let mut num_finish_tiles_accounted_for = 0;
+        let mut num_finish_tiles_accounted_for = 1;
 
         // Go left of the starting position:
         for tile in grid[start_row][..start_col].iter_mut().rev() {
