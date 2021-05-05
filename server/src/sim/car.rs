@@ -94,8 +94,8 @@ impl Car {
         // Getting these displacements is actualy pretty simple! Let's go through them. Looking at
         // these with the above diagram in mind makes quick checks nice for us :)
         let to_front = Point {
-            x: self.angle.cos() * Car::LENGTH,
-            y: self.angle.sin() * Car::LENGTH,
+            x: self.angle.cos() * Car::LENGTH/2.0,
+            y: self.angle.sin() * Car::LENGTH/2.0,
         };
 
         // The angle here is rotated clockwise by a quarter-turn -- i.e. PI/2. We could use that
@@ -106,8 +106,8 @@ impl Car {
         //
         // So we get:
         let to_right = Point {
-            x: self.angle.sin() * Car::WIDTH,
-            y: -self.angle.cos() * Car::WIDTH,
+            x: self.angle.sin() * Car::WIDTH/2.0,
+            y: -self.angle.cos() * Car::WIDTH/2.0,
         };
 
         vec![
