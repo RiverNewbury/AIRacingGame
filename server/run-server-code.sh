@@ -16,4 +16,4 @@ trap "kill $server_pid" EXIT
 # to give it a chance.
 sleep 0.5
 
-curl -X POST --data-binary '@test.py' "http://localhost:8000/run/test_user"
+curl -X POST --data-urlencode '@test.py' "http://localhost:8000/run/test_user"
