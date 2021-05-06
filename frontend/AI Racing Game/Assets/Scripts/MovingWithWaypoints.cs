@@ -32,10 +32,10 @@ public class MovingWithWaypoints : MonoBehaviour
         float ysdif = sDif.y;
         float x = pos.x;
         float y = pos.y;
-        float SW = 2;
-        float CW = 0.125f;
-        float SH = 10;
-        float CH = 4; //these might need to change, estimations
+        float SW = 30f;
+        float SH = 30f;
+        float CW = 7f;
+        float CH = 7f; //these might need to change, estimations
         
         float wx = (CW * (x - xsdif))/SW + xcdif;
         float wy = (CH* (y - ysdif))/SH + ycdif;
