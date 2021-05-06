@@ -21,7 +21,7 @@ const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
 // The number of angles to check the distance to the wall at
 const NUMBER_ANGLES_TO_CHECK: usize = 60;
 // Emergency Tick Limit
-const TICK_LIMIT: i32 = 10000;
+const TICK_LIMIT: i32 = 60000;
 
 // Almost all the computation will be done in the Simulation Object
 
@@ -92,19 +92,50 @@ impl Simulation {
         }
     }
 
+    fn passed_finish_line2(&self, start: Point, end: Point) -> bool {
+        let mut point_checking = start;
+        let num_checks: i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
+        let delta = (end - start) / (num_checks as f32);
+        for i in 0..num_checks {
+            point_checking += delta;
+            if self.am_on_finish_line(point_checking) && self.car.speed > 0.0 {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn am_on_finish_line(&self, p: Point) -> bool {
+       let square = self.track.get_tile(p);
+       match square {
+           GridTile::Outside => false,
+           GridTile::Inside {
+               contains_finish_line,
+           } => contains_finish_line,
+           GridTile::Border {
+               contains_finish_line,
+               ..
+           } => {
+               if contains_finish_line && self.in_bounds(p) {
+                   true
+               } else {
+                   false
+               }
+           }
+       }
+   }
+
     // Checks the car goes over the finishline the correct number of times to finish the game
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;
 
         let intersection = Simulation::intersection_of_2_lines(start, end, p1, p2);
-
         //TODO : If p2.x = p1.x then it breaks FIX
         let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x) / (p2.x - p1.x);
 
         //Tells you if coming from the correct direction
         // TODO : may break if doesn't start at 180 angle
         let correct_direction = ycheck <= start.y;
-
         match intersection {
             None => false,
             Some(p) => {
@@ -139,12 +170,12 @@ impl Simulation {
 
     fn intersection_of_2_lines(s1: Point, e1: Point, s2: Point, e2: Point) -> Option<Point> {
         // Line s1 e1 represented a1x + b1y = c1
-        let a1 = s1.y - e1.y;
+        let a1 = e1.y - s1.y;
         let b1 = s1.x - e1.x;
         let c1 = a1 * s1.x + b1 * s1.y;
 
         // Line s2 e2 represented as a2x + b2y = c2
-        let a2 = s2.y - e2.y;
+        let a2 = e2.y - s2.y;
         let b2 = s2.x - e2.x;
         let c2 = a2 * s2.x + b2 * s2.y;
 
@@ -184,45 +215,14 @@ impl Simulation {
     }
 
     // TODO - Probably should use more advanced line system
+    // ALL border tiles are assumed to be in the racetrack
+    // TODO - fix this ^
     fn in_bounds(&self, point: Point) -> bool {
         let square = self.track.get_tile(point);
         match square {
             GridTile::Outside => false,
             GridTile::Inside { .. } => true,
-            GridTile::Border {
-                border: (p1, p2), ..
-            } => {
-                // Boolean value to indicate if `point` is "underneath" the line from `p1` to `p2`,
-                // where "underneath" is the same direction w.r.t. p1 and p2, regardless of the
-                // frame of reference.
-                //
-                // The boolean value is true if p2.x > p1.x and point.y is below the line from p1
-                // to p2.
-                let is_underneath = |p: Point| {
-                    let amount = (p.x - p1.x) * (p2.y - p1.y) - (p.y - p1.y) * (p2.x - p1.x);
-                    amount < 0.0
-                };
-                let base_is_underneath = is_underneath(point);
-
-                // Now need to work out which neighbours are on the same side of the square to
-                // check to see if they're inside
-                let tile_size = self.track.tile_size;
-                let center = Point {
-                    x: ((point.x / tile_size).floor() + 0.5) * tile_size,
-                    y: ((point.y / tile_size).floor() + 0.5) * tile_size,
-                };
-
-                let up = center.add_y(tile_size);
-                let left = center.add_x(-tile_size);
-                let down = center.add_y(-tile_size);
-                let right = center.add_x(tile_size);
-
-                let on_inside = [up, left, down, right].iter().cloned().any(|p| {
-                    is_underneath(p) == base_is_underneath && self.track.get_tile(p).is_inside()
-                });
-
-                on_inside
-            }
+            GridTile::Border {.. } => true,
         }
     }
 
@@ -272,6 +272,7 @@ impl Simulation {
 
             for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
+                    print!("{:?}, {:?}",*s,*f);
                     let score = Score {
                         successful: false,
                         time: ticks,
@@ -301,7 +302,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state.clone(),
-            laps: 4 * track.laps,
+            laps: 0,
         }
     }
 }

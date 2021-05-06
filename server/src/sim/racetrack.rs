@@ -590,7 +590,7 @@ impl Racetrack {
         }
 
         // And then we're done! We just need to return the final `Racetrack`:
-        Ok(Racetrack {
+        let ret = Racetrack {
             height,
             width,
             grid,
@@ -598,7 +598,10 @@ impl Racetrack {
             finish_line,
             tile_size,
             laps,
-        })
+        };
+
+        print!("{}", ret.display_bounds());
+        Ok(ret)
     }
 
     /// Produces a copy of the tile containing the given point
@@ -614,7 +617,7 @@ impl Racetrack {
     /// Helper function to display the bounds of the racetrack in more detail
     ///
     /// Used for debugging.
-    #[cfg(test)]
+    //#[cfg(test)]
     pub fn display_bounds<'a>(&'a self) -> impl 'a + std::fmt::Display {
         use std::fmt::{self, Display, Formatter};
 
