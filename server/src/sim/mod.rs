@@ -106,24 +106,24 @@ impl Simulation {
     }
 
     fn am_on_finish_line(&self, p: Point) -> bool {
-       let square = self.track.get_tile(p);
-       match square {
-           GridTile::Outside => false,
-           GridTile::Inside {
-               contains_finish_line,
-           } => contains_finish_line,
-           GridTile::Border {
-               contains_finish_line,
-               ..
-           } => {
-               if contains_finish_line && self.in_bounds(p) {
-                   true
-               } else {
-                   false
-               }
-           }
-       }
-   }
+        let square = self.track.get_tile(p);
+        match square {
+            GridTile::Outside => false,
+            GridTile::Inside {
+                contains_finish_line,
+            } => contains_finish_line,
+            GridTile::Border {
+                contains_finish_line,
+                ..
+            } => {
+                if contains_finish_line && self.in_bounds(p) {
+                    true
+                } else {
+                    false
+                }
+            }
+        }
+    }
 
     // Checks the car goes over the finishline the correct number of times to finish the game
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
@@ -222,7 +222,7 @@ impl Simulation {
         match square {
             GridTile::Outside => false,
             GridTile::Inside { .. } => true,
-            GridTile::Border {.. } => true,
+            GridTile::Border { .. } => true,
         }
     }
 
@@ -272,7 +272,7 @@ impl Simulation {
 
             for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
-                    print!("{:?}, {:?}",*s,*f);
+                    print!("{:?}, {:?}", *s, *f);
                     let score = Score {
                         successful: false,
                         time: ticks,

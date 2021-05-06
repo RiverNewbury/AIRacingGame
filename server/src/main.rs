@@ -9,9 +9,9 @@
 #![feature(decl_macro)]
 
 use lazy_static::lazy_static;
+use rocket::http::RawStr;
 use rocket::response::status::BadRequest;
 use rocket::{get, post, routes};
-use rocket::http::RawStr;
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 
@@ -33,7 +33,7 @@ type RequestResult<T> = Result<Json<T>, BadRequest<String>>;
 
 #[post("/run/<username>", data = "<source_code_raw>")]
 fn exec_user_code(username: String, source_code_raw: String) -> RequestResult<SimulationData> {
-    let source_code : String = (RawStr::from_str(&source_code_raw)).url_decode_lossy();
+    let source_code: String = (RawStr::from_str(&source_code_raw)).url_decode_lossy();
 
     let code = Code::from_str(&source_code).map_err(|e| BadRequest(Some(e)))?;
 
