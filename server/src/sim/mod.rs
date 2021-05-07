@@ -208,6 +208,7 @@ impl Simulation {
                 if Simulation::between_2_points(p1, p2, p)
                     && Simulation::between_2_points(start, end, p)
                 {
+                    //print!("{:?}, {:?} ,{:?}\n",start, end, self.laps);
                     if correct_direction && (self.laps == 0) {
                         true
                     } else if correct_direction {

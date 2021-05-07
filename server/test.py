@@ -20,7 +20,7 @@ s = """
 |xxx  i   xxxxx         xxxxxxxxx         xx|
 |xxx      xxx      c      xxxxxxx         xx|
 |xxxx   a                                 xx|
-|xxxxxx      b    xxx       d        e   xxx|
+|xxxxxx      b    xxx    d           e   xxx|
 |xxxxxxxxx      xxxxxxxxxxxx             xxx|
 |xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
 +-------------------------------------------+
@@ -43,7 +43,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 """
 
-data = [(17,7), (25,5), (37,9), (54,6), (72,6), (73,15), (51,21), (17,21), (7,9)]
+data = [(17,7), (25,5), (37,9), (49,6), (72,6), (73,15), (51,21), (17,21), (7,9)]
 
 def outputs(car):
     global data
@@ -52,14 +52,11 @@ def outputs(car):
     cur_angle = car.angle % (2 * math.pi)
 
     (remove, angle) = go_to(x, y, data[0])
-    print(car.angle, cur_angle, angle)
 
     if (remove == True):
         data = data[1:]
-        print(x,y)
-        print(data[0])
-        (remove, angle) = go_to(x, y, data[0])
-        print(angle)
+        #print(x,y)
+        #print(data[0])
 
     turn = 0
 
@@ -69,8 +66,8 @@ def outputs(car):
         turn = 0.05
 
     accc = 0
-    if (car.speed < 0.05):
-        accc = 0.1
+    if (car.speed < 10):
+        accc = 0.3
 
     #print(angle)
     return CarCommand(acc = accc, steering = turn)
