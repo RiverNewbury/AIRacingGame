@@ -1,23 +1,18 @@
 //! Wrapper module for the [`Car`] type
 
-use pyo3::prelude::pyclass;
 use serde::Serialize;
 use std::f32::consts::PI;
 
 use super::{Point, TICKS_PER_SECOND};
 
 /// All of the information about the car at a particular point in time
-#[pyclass]
 #[derive(Clone, Serialize, Debug)]
 pub struct Car {
     /// The position of the car
-    #[pyo3(get)]
     pub pos: Point,
     /// The angle the car is facing, anticlockwise from the positive x direction - in radians
-    #[pyo3(get)]
     pub angle: f32,
     /// The current speed, in "unit distance per simulation tick", of the car
-    #[pyo3(get)]
     pub speed: f32,
 }
 

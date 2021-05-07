@@ -3,17 +3,17 @@
 
 class CarCommand:
     # Constructs the `CarCommand` object, optionally setting the
-    # acceleration and turning speed
-    def __init__(self, acc: float = 0.0, turning_speed: float = 0.0):
+    # acceleration and steering
+    def __init__(self, acc: float = 0.0, steering: float = 0.0):
         self.acc = acc
-        self.turning_speed = turning_speed
+        self.steering = steering
 
 i = 0
 
-def outputs(env):
+def outputs(car):
     global i
     i += 1
     print(i)
     
-    return CarCommand(acc = 0.5, turning_speed = 0.0)
+    return CarCommand(acc = 0.5, steering = 0.0)
 

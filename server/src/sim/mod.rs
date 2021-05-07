@@ -1,4 +1,4 @@
-use crate::code::{Code, ExecEnvironment};
+use crate::code::{CarEnvironment, Code};
 use serde::Serialize;
 use std::f32::consts::PI;
 
@@ -52,7 +52,7 @@ pub struct SimulationData {
 }
 
 impl Simulation {
-    fn make_environment(&self) -> ExecEnvironment {
+    fn make_environment(&self) -> CarEnvironment {
         let go_dist = |start: Point, dist: f32, angle: f32| {
             let traveled = Point::new_polar(dist, angle);
             start + traveled
@@ -86,8 +86,10 @@ impl Simulation {
             dists.push(f(base_angle + i as f32 * angle_delta))
         }
 
-        ExecEnvironment {
-            car_currently: self.car.clone(),
+        CarEnvironment {
+            pos: self.car.pos,
+            angle: self.car.angle,
+            speed: self.car.speed / Car::MAX_SPEED,
             dist_to_wall: dists,
         }
     }
@@ -262,7 +264,7 @@ impl Simulation {
             // the average speed for that tick. We'll assume the speed increases uniformly.
             let dist = (self.car.speed + new_speed) / 2.0;
             self.car.speed = new_speed;
-            self.car.update_state(dist, action.turning_speed);
+            self.car.update_state(dist, action.steering);
 
             hist.history.push(self.car.clone());
 

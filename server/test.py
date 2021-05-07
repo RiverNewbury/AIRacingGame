@@ -3,10 +3,10 @@ import math
 
 class CarCommand:
     # Constructs the `CarCommand` object, optionally setting the
-    # acceleration and turning speed
-    def __init__(self, acc: float = 0.0, turning_speed: float = 0.0):
+    # acceleration and steering
+    def __init__(self, acc: float = 0.0, steering: float = 0.0):
         self.acc = acc
-        self.turning_speed = turning_speed
+        self.steering = steering
 
 s = """
 +-------------------------------------------+
@@ -43,10 +43,10 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 """
 
-def outputs(env):
-    x = float(env.car_currently.pos.x)
-    y = float(env.car_currently.pos.y)
-    cur_angle = env.car_currently.angle
+def outputs(car):
+    x = float(car.pos.x)
+    y = float(car.pos.y)
+    cur_angle = car.angle
 
     with open("mem.txt", "r") as f:
         data = f.readlines()
@@ -72,11 +72,11 @@ def outputs(env):
         turn = -0.05
 
     accc = 0
-    if (env.car_currently.speed < 0.01):
+    if (car.speed < 0.1):
         accc = 0.1
 
     #print(angle)
-    return CarCommand(acc = accc, turning_speed = turn)
+    return CarCommand(acc = accc, steering = turn)
 
 def go_to(x, y, p):
     (px,py) = p
