@@ -209,11 +209,22 @@ impl Simulation {
     }
 
     //TODO: Research air resistance
-    fn speed_after_tick(&self, acc: f32) -> f32 {
-        let car = &self.car;
-        let actual_acc = acc * car.max_acc();
+    fn speed_after_tick(&self, mut acc: f32) -> f32 {
+        // Acceleration is intended to be between -1 and 1, with -1 indicating maximum decreasing
+        // of speed and 1 indicating maximum increasing
+        acc = acc.clamp(-1.0, 1.0);
 
-        (car.speed + actual_acc).min(Car::MAX_SPEED)
+        // There's separate bounds on acceleration and deceleration. We'll figure out how fast the
+        // car is *actually* going:
+        let actual_acc = if acc >= 0.0 {
+            acc * self.car.max_acc()
+        } else {
+            acc * self.car.max_dec()
+        };
+
+        // Taking the minimum here isn't currently needed with the acceleration formula, but it
+        // safeguards against future changes.
+        (self.car.speed + actual_acc).min(Car::MAX_SPEED)
     }
 
     // TODO - Probably should use more advanced line system
