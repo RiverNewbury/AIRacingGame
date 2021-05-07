@@ -1,5 +1,15 @@
+//! Full simulation of the car's journey around the racetrack
+//!
+//! The simulation is based on individual "ticks", where we update the car's state at each tick,
+//! corresponding to the previously-requested acceleration and steering. We also check that the car
+//! has not crashed into a wall (and if it's crossed the finish line).
+//!
+//! User input is not requested every tick; instead it's only done once every `TICKS_PER_UPDATE`.
+//! There's a number of other relevant constants defined here, all of which are briefly defined.
+
 use crate::code::{CarEnvironment, Code};
 use serde::Serialize;
+use std::cmp;
 use std::f32::consts::PI;
 
 mod car;
@@ -10,41 +20,86 @@ pub use car::Car;
 pub use point::Point;
 pub use racetrack::{GridTile, Racetrack};
 
-// A tick is the unit on which thte simulation will update the world
+/// A concrete measure of the duration of a tick -- used for scaling external constants (like
+/// `Car::MAX_SPEED`, which is measured in units per tick)
 const TICKS_PER_SECOND: i32 = 100;
-// The number of ticks until the users code will be asked what it wants to do next
+
+/// The number of ticks until the user's code will be called to get updated actions
 const TICKS_PER_UPDATE: i32 = 10;
-// The number of checks/ unit dist along a line that the car travels to make sure it never goes out of bounds
+
+/// The number of checks per unit distance along a line that the car travels to make sure it never
+/// goes out of bounds
 const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
-// The maximum error acceptable when giving the distance to the wall to the User
+
+/// The maximum error acceptable when giving the distance to the wall to the user
 const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
-// The number of angles to check the distance to the wall at
+
+/// The number of angles at which to check the distance to the wall. Controls the length of the
+/// `dist_to_wall` field of [`CarEnvironment`].
 const NUMBER_ANGLES_TO_CHECK: usize = 60;
-// Emergency Tick Limit
+
+/// The maximum number of ticks that a simulation is allowed to run for. If the user's code does
+/// not complete within the alloted time, their score is marked as unsuccessful.
 const TICK_LIMIT: i32 = 60000;
 
 // Almost all the computation will be done in the Simulation Object
 
+/// The core of the simulation
+///
+/// Notable methods here include:
+/// * `new` to construct the simulation and its data
+/// * `make_environment` for producing the `CarEnvironment` to pass to user code
+/// * `simulate` to fully run the simulation
 pub struct Simulation {
     code: Code,
     track: &'static Racetrack,
+
+    /// The current state of the car, while simulating. This is updated on each tick
     car: Car,
-    // For i circuits to have to be done laps = 4 * i (as car has 4 corners)
+
+    /// The total number of times a corner of the car must cross the finish line.
+    ///
+    /// This value is four times the number of circuits around the track that must be completed.
     laps: i32,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Debug)]
+/// The result of a single attempt around the racetrack
+///
+/// `Score`s are ordered so that successful attempts come before unsuccessful ones, and ones with
+/// quicker times around the track are ranked higher.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Serialize, Debug)]
 pub struct Score {
+    /// Whether the attempt was successful
     successful: bool,
-    time: i32, // In terms of ticks
+
+    /// The number of ticks before the simulation ended - either by finishing, crashing into a
+    /// wall, or timing out.
+    time: i32,
 }
 
+impl Ord for Score {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        self.successful
+            .cmp(&other.successful)
+            // Reverse the ordering here so that shorter times are ranked as "greater"
+            .then(other.time.cmp(&self.time))
+    }
+}
+
+/// The full history of the car's state during the simulation
 #[derive(Serialize, Debug)]
 pub struct SimulationHistory {
     history: Vec<Car>,
-    tps: i32, // Ticks per second used for this simulation
+
+    /// The number of ticks per second used for the simulation
+    ///
+    /// This is included for forwards-compatability, so that clients need not change if the tick
+    /// rate changes here.
+    tps: i32,
 }
 
+/// The full result of a simulation, including both the trajectory of the car and the user's
+/// assigned score
 #[derive(Serialize, Debug)]
 pub struct SimulationData {
     pub history: SimulationHistory,
@@ -52,12 +107,14 @@ pub struct SimulationData {
 }
 
 impl Simulation {
+    /// Constructs the information about the car passed to the user's code
     fn make_environment(&self) -> CarEnvironment {
         let go_dist = |start: Point, dist: f32, angle: f32| {
             let traveled = Point::new_polar(dist, angle);
             start + traveled
         };
 
+        // Produces the distance from the car to wall at a given angle
         let f = |angle: f32| {
             let mut dist_traveled = 0.0;
             let mut precision = 1.0;
@@ -78,13 +135,20 @@ impl Simulation {
 
             dist_traveled
         };
-        let mut dists = Vec::with_capacity(NUMBER_ANGLES_TO_CHECK);
+
+        // We want to have the angles exactly fill the semi-circle in front of the car; if we
+        // defined `angle_delta` to be equal to "pi / num angles", we would be missing either the
+        // left-most or right-most angle. So we subtract 1 to ensure that we include both
+        // endpoints.
         let angle_delta = PI / (NUMBER_ANGLES_TO_CHECK as f32 - 1.0);
 
-        let base_angle = self.car.angle - (PI / 2.0);
-        for i in (0..NUMBER_ANGLES_TO_CHECK).rev() {
-            dists.push(f(base_angle + i as f32 * angle_delta))
-        }
+        // Per the requirements of `CarEnvironment`, the distances here are ordered from left-most
+        // (i.e. greatest angle) to right-most (least angle). Directly left of the car corresponds
+        // to an increase of π/2 from its angle, and to the right is a decrease of π/2.
+        let base_angle = self.car.angle + (PI / 2.0);
+        let dists = (0..NUMBER_ANGLES_TO_CHECK)
+            .map(|i| f(base_angle - i as f32 * angle_delta))
+            .collect();
 
         CarEnvironment {
             pos: self.car.pos,
@@ -239,6 +303,9 @@ impl Simulation {
         }
     }
 
+    /// Runs the full simulation, returning only if: (a) the car finishes, (b) the car crashes,
+    /// or (c) the tick limit is reached
+    //
     // The users affect on the car happen at the start of the tick (before calculating new position)
     pub fn simulate(mut self) -> Result<(Score, SimulationHistory), String> {
         // If Car more than 1 unit wide will break wall collision - (as only check at the corners so
@@ -307,6 +374,7 @@ impl Simulation {
         Ok((score, hist))
     }
 
+    /// Creates a new `Simulation` object, given the user's code and the specified racetrack to use
     pub fn new(code: Code, track: &'static Racetrack) -> Self {
         Simulation {
             code,
