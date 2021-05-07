@@ -380,7 +380,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state.clone(),
-            laps: laps: track.laps*4 - 2,
+            laps: track.laps*4 - 2,
         }
     }
 }
