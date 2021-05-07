@@ -1206,12 +1206,12 @@ MonoBehaviour:
       m_Calls: []
   m_text: "<style=\"title\">Documentation for Scripting Language</style>\n<style=\"heading\">Specific
     to our scripting language</style>\n<style=\"subheading\">General structure of
-    code</style>\n\nclass CarCommand:\n    # Constructs the `CarCommand` object,
-    optionally setting the\n    # acceleration and steering\n    def __init__(self,
+    code</style>\n<style=\"code\">\nclass CarCommand:\n    # Constructs the `CarCommand`
+    object, optionally setting the\n    # acceleration and steering\n    def __init__(self,
     acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
     = steering\n\ndef outputs(env):\n\t# Logic for calculating what to do :)\n\t#\n\t#
     For this example, we'll just go straight:\n\treturn CarCommand(acc = 0.5, steering
-    = 0.0)\n\n<style=\"subheading\">A bit of explaination of above code</style>\n\nIt
+    = 0.0)\n</style>\n<style=\"subheading\">A bit of explaination of above code</style>\n\nIt
     should have a function `outputs`, taking a single argument as input. `outputs`
     is called every so often in order to determine what the car should do. The input,
     `env` has a couple of fields describing it's state:\n\n* `pos`: a point with
@@ -1228,17 +1228,17 @@ MonoBehaviour:
     -- also from `-1` to `1` -- that controls how far to turn the wheel,\nwhere `-1`
     is all the way to the left, and `1` is all the way to the right.\n\nAs the car
     speeds up, the amount it's able to turn decreases -- so be careful while driving
-    quickly!\n\n<style=\"subheading\">A quick guide on storing information</style>\n\n#
+    quickly!\n\n<style=\"subheading\">A quick guide on storing information</style>\n<style=\"code\">\n#
     A simple example program, to showcase how we're able to store data\n# between
     individual calls to `outputs`\n\nclass CarCommand:\n    # Constructs the `CarCommand`
     object, optionally setting the\n    # acceleration and steering\n    def __init__(self,
     acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
     = steering\n\ni = 0\n\ndef outputs(car):\n    global i\n    i += 1\n    print(i)\n   
-    \n    return CarCommand(acc = 0.5, steering = 0.0)\n\nIn the above code the value
-    of i is updated every time and by using global variables you can store whatever
-    your heart desires :)\n\n<style=\"heading\">General Python</style>\n\nAs the
-    saying goes don't reinvent the wheel and so we have opted to link to python tutorials
-    on the web.\n\n<link=\"https://docs.python.org/3/tutorial/index.html\">General
+    \n    return CarCommand(acc = 0.5, steering = 0.0)\n</style>\nIn the above code
+    the value of i is updated every time and by using global variables you can store
+    whatever your heart desires :)\n\n<style=\"heading\">General Python</style>\n\nAs
+    the saying goes don't reinvent the wheel and so we have opted to link to python
+    tutorials on the web.\n\n<link=\"https://docs.python.org/3/tutorial/index.html\">General
     python Documentaion </link>\n2 Good Sites for Beginners :\n - <link=\"https://www.w3schools.com/python/\">1
     (ooh how mysterious)</link>\n - <link=\"https://www.tutorialspoint.com/python/index.htm\">2
     (who knows where you'll go [well me but I'm not telling you that'd spoil the
@@ -1308,7 +1308,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 1
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 15.359375, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
