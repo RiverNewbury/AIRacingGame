@@ -18,9 +18,9 @@ s = """
 |xxx     xxxxxxxxxxxxxxxxxxxxxx      f   xxx|
 |xxx**s**xxxxxxxxxxxxxxxxxxxxxxxx         xx|
 |xxx  i   xxxxx         xxxxxxxxx         xx|
-|xxx      xxx      b      xxxxxxx         xx|
-|xxxx   a              d                  xx|
-|xxxxxx           xxx                e   xxx|
+|xxx      xxx      c      xxxxxxx         xx|
+|xxxx   a                                 xx|
+|xxxxxx      b    xxx       d        e   xxx|
 |xxxxxxxxx      xxxxxxxxxxxx             xxx|
 |xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
 +-------------------------------------------+
@@ -43,36 +43,33 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 """
 
+data = [(17,7), (25,5), (37,9), (54,6), (72,6), (73,15), (51,21), (17,21), (7,9)]
+
 def outputs(car):
+    global data
     x = float(car.pos.x)
     y = float(car.pos.y)
-    cur_angle = car.angle
-
-    with open("mem.txt", "r") as f:
-        data = f.readlines()
-
-    for i in range(len(data)):
-        data[i] = data[i][0:-1]
-        data[i] = data[i].split(',')
-        data[i] = (int(data[i][0]), int(data[i][1]))
+    cur_angle = car.angle % (2 * math.pi)
 
     (remove, angle) = go_to(x, y, data[0])
+    print(car.angle, cur_angle, angle)
 
     if (remove == True):
         data = data[1:]
-        with open("mem.txt", "w") as f:
-            for element in data:
-                f.write(str(element[0]) + "," + str(element[1]) + "\n")
+        print(x,y)
+        print(data[0])
+        (remove, angle) = go_to(x, y, data[0])
+        print(angle)
 
     turn = 0
 
-    if cur_angle > angle :
-        turn = 0.05
-    else:
+    if  (angle - cur_angle)%(2*math.pi) < math.pi :
         turn = -0.05
+    else:
+        turn = 0.05
 
     accc = 0
-    if (car.speed < 0.1):
+    if (car.speed < 0.05):
         accc = 0.1
 
     #print(angle)
