@@ -27,13 +27,6 @@ const TICKS_PER_SECOND: i32 = 100;
 /// The number of ticks until the user's code will be called to get updated actions
 const TICKS_PER_UPDATE: i32 = 10;
 
-/// The number of checks per unit distance along a line that the car travels to make sure it never
-/// goes out of bounds
-const NUMBER_CHECKS_PER_UNIT_DIST: f32 = 10.0;
-
-/// The maximum error acceptable when giving the distance to the wall to the user
-const ACCURACY_OF_DIST_TO_WALL: f32 = 0.001;
-
 /// The number of angles at which to check the distance to the wall. Controls the length of the
 /// `dist_to_wall` field of [`CarEnvironment`].
 const NUMBER_ANGLES_TO_CHECK: usize = 60;
@@ -109,31 +102,87 @@ pub struct SimulationData {
 impl Simulation {
     /// Constructs the information about the car passed to the user's code
     fn make_environment(&self) -> CarEnvironment {
-        let go_dist = |start: Point, dist: f32, angle: f32| {
-            let traveled = Point::new_polar(dist, angle);
-            start + traveled
-        };
-
         // Produces the distance from the car to wall at a given angle
-        let f = |angle: f32| {
-            let mut dist_traveled = 0.0;
-            let mut precision = 1.0;
-            let mut start = self.car.pos;
-            let mut end = go_dist(start, precision, angle);
+        let f = |mut angle: f32| {
+            let (x_lo, x_hi) = (0.0, self.track.width as f32 * self.track.tile_size);
+            let (y_lo, y_hi) = (0.0, self.track.height as f32 * self.track.tile_size);
 
-            while precision > ACCURACY_OF_DIST_TO_WALL {
-                let hit = self.hit_wall(start, end);
-                if !hit {
-                    dist_traveled += precision;
-                    precision *= 2.0;
-                    start = end;
-                } else {
-                    precision /= 2.0;
-                }
-                end = go_dist(start, precision, angle);
+            // Get the angle in the range 0..2π
+            if angle < 0.0 {
+                // Not convinced as to why this works? try it on desmos!
+                angle += (angle.abs() / (2.0 * PI)).ceil() * (2.0 * PI);
+                assert!((0.0..(2.0 * PI)).contains(&angle));
+            } else {
+                angle = angle % (2.0 * PI);
             }
 
-            dist_traveled
+            // Helper booleans to indicate whether the angle is facing in that "sort" of direction.
+            // It's essentially to tell us what quadrant the angle is in, but in a somewhat nicer
+            // form.
+            let upper = (0.0..PI).contains(&angle);
+            let left = (PI / 2.0..3.0 * PI / 2.0).contains(&angle);
+            let lower = (PI..2.0 * PI).contains(&angle);
+            let right =
+                (3.0 * PI / 2.0..2.0 * PI).contains(&angle) || (0.0..PI / 2.0).contains(&angle);
+
+            // We'll set `end_point` to be the point that we collide with at the bounds of the
+            // racetrack from this angle
+            //
+            // If we don't find any aplicable point, that's an error.
+            let mut end_point = None;
+
+            // A sample point on the line with the angle we're interested in -- exactly one unit's
+            // distance in that direction, though that fact isn't used anywhere.
+            let unit_point = Point {
+                x: self.car.pos.x + angle.cos(),
+                y: self.car.pos.y + angle.sin(),
+            };
+
+            if upper {
+                let p1 = Point { x: x_lo, y: y_hi };
+                let p2 = Point { x: x_hi, y: y_hi };
+                if let Some(p) = intersection_of_2_lines(p1, p2, self.car.pos, unit_point) {
+                    if x_lo <= p.x && p.x <= x_hi {
+                        end_point = Some(p);
+                    }
+                }
+            } else if lower {
+                let p1 = Point { x: x_lo, y: y_lo };
+                let p2 = Point { x: x_hi, y: y_lo };
+                if let Some(p) = intersection_of_2_lines(p1, p2, self.car.pos, unit_point) {
+                    if x_lo <= p.x && p.x <= x_hi {
+                        end_point = Some(p);
+                    }
+                }
+            }
+
+            if left {
+                let p1 = Point { x: x_lo, y: y_lo };
+                let p2 = Point { x: x_lo, y: y_hi };
+                if let Some(p) = intersection_of_2_lines(p1, p2, self.car.pos, unit_point) {
+                    if y_lo <= p.y && p.y <= y_hi {
+                        end_point = Some(p);
+                    }
+                }
+            } else if right {
+                let p1 = Point { x: x_hi, y: y_lo };
+                let p2 = Point { x: x_hi, y: y_hi };
+                if let Some(p) = intersection_of_2_lines(p1, p2, self.car.pos, unit_point) {
+                    if y_lo <= p.y && p.y <= y_hi {
+                        end_point = Some(p);
+                    }
+                }
+            }
+
+            let edge_point = end_point.expect("couldn't find a point on the edge of the track");
+            let wall_point = self
+                .passed_line(self.car.pos, edge_point, GridTile::try_border)
+                .expect("couldn't find wall collision point");
+
+            // Calculate the distance to the point on the wall
+            let d = wall_point - self.car.pos;
+            let dist = (d.x * d.x + d.y * d.y).sqrt();
+            (dist * 16.0).round() / 16.0
         };
 
         // We want to have the angles exactly fill the semi-circle in front of the car; if we
@@ -158,118 +207,198 @@ impl Simulation {
         }
     }
 
-    fn passed_finish_line2(&self, start: Point, end: Point) -> bool {
-        let mut point_checking = start;
-        let num_checks: i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
-        let delta = (end - start) / (num_checks as f32);
-        for i in 0..num_checks {
-            point_checking += delta;
-            if self.am_on_finish_line(point_checking) && self.car.speed > 0.0 {
-                return true;
-            }
-        }
-        false
-    }
+    /// Returns the position -- if applicable -- at which something traveling from `start` to `end`
+    /// would pass a line given by `get_line`.
+    ///
+    /// This is made generic so that we can use the same function for wall collision detection,
+    /// checking if the car has passed the finish line, AND producing the distances to the nearest
+    /// walls for `CarEnvironment`.
+    ///
+    /// Because this is so crucial, it's intentionally thoroughly commented.
+    fn passed_line<Func>(&self, start: Point, end: Point, get_line: Func) -> Option<Point>
+    where
+        Func: Fn(&GridTile) -> Option<(Point, Point)>,
+    {
+        use std::cmp::Ordering::{Equal, Greater, Less};
 
-    fn am_on_finish_line(&self, p: Point) -> bool {
-        let square = self.track.get_tile(p);
-        match square {
-            GridTile::Outside => false,
-            GridTile::Inside {
-                contains_finish_line,
-            } => contains_finish_line,
-            GridTile::Border {
-                contains_finish_line,
-                ..
-            } => {
-                if contains_finish_line && self.in_bounds(p) {
-                    true
-                } else {
-                    false
+        // We're doing something reasonably complicated here. As we're going along, we store the
+        // current index(es) of the tile we're looking at -- by `row` and `col`. We also have a
+        // couple helper points: `current_point` and `next_point`, the latter of which is
+        // calculated inside of the loop.
+        //
+        // `current_point` corresponds to a value that's *either* the starting point, or on the
+        // edge of a tile on the line from `start` to `end. `next_point` is similar, except it is
+        // either the END point, or on an edge.
+        //
+        // Both `current_point` and `next_point` are always guaranteed to be along the line from
+        // `start` to `end`.
+        //
+        // We pick the value of `next_point` by examining which edge of the current tile the line
+        // collides with -- essentially by checking whether the intersections with the edges of the
+        // tile most near `end` are actually within the bounds of the other borders.
+        let mut current_point = start;
+
+        // Helper alias to make things readable.
+        let tile_size = self.track.tile_size;
+
+        let mut cur_col = (start.x / tile_size) as usize;
+        let mut cur_row = (start.y / tile_size) as usize;
+
+        // We can make the condition here exact because - once we get far enough along - we just
+        // end up setting `next_point` to exactly the value of `end`.
+        while current_point != end {
+            // The bounds of the current tile, as defined by the four bounding lines
+            let (x_lo, x_hi) = (cur_col as f32 * tile_size, (cur_col + 1) as f32 * tile_size);
+            let (y_lo, y_hi) = (cur_row as f32 * tile_size, (cur_row + 1) as f32 * tile_size);
+
+            // We'll now try to get the next point. This is a little bit funky -- because we don't
+            // have labeled blocks, we'll just have a single-iteration loop. LLVM will compile this
+            // down to the proper thing by realizing that there's no way to repeat the loop.
+            let (next_row, next_col, next_point) = loop {
+                // First up: check if the current tile contains the end point -- if it does, we're
+                // done.
+                if x_lo <= end.x && end.x <= x_hi && y_lo <= end.y && end.y <= y_hi {
+                    // We return `cur_row` and `cur_col` because the indexes are only reset if the
+                    // point we return isn't `end`.
+                    break (cur_row, cur_col, end);
+                }
+
+                // Check the upper or lower edge of the tile, depending on which direction the line
+                // goes
+                match end.y.partial_cmp(&start.y) {
+                    Some(Greater) => {
+                        let p1 = Point { x: x_lo, y: y_hi };
+                        let p2 = Point { x: x_hi, y: y_hi };
+
+                        match intersection_of_2_lines(p1, p2, start, end) {
+                            Some(p) if x_lo <= p.x && p.x <= x_hi => {
+                                break (cur_row + 1, cur_col, p);
+                            }
+                            _ => (),
+                        }
+                    }
+                    Some(Less) => {
+                        let p1 = Point { x: x_lo, y: y_lo };
+                        let p2 = Point { x: x_hi, y: y_lo };
+
+                        match intersection_of_2_lines(p1, p2, start, end) {
+                            Some(p) if x_lo <= p.x && p.x <= x_hi => {
+                                break (cur_row - 1, cur_col, p);
+                            }
+                            _ => (),
+                        }
+                    }
+                    Some(Equal) | None => (),
+                }
+
+                match end.x.partial_cmp(&start.x) {
+                    Some(Greater) => {
+                        let p1 = Point { x: x_hi, y: y_lo };
+                        let p2 = Point { x: x_hi, y: y_hi };
+
+                        match intersection_of_2_lines(p1, p2, start, end) {
+                            Some(p) if y_lo <= p.y && p.y <= y_hi => {
+                                break (cur_row, cur_col + 1, p);
+                            }
+                            _ => (),
+                        }
+                    }
+                    Some(Less) => {
+                        let p1 = Point { x: x_lo, y: y_lo };
+                        let p2 = Point { x: x_lo, y: y_hi };
+                        match intersection_of_2_lines(p1, p2, start, end) {
+                            Some(p) if y_lo <= p.y && p.y <= y_hi => {
+                                break (cur_row, cur_col - 1, p);
+                            }
+                            _ => (),
+                        }
+                    }
+                    Some(Equal) | None => (),
+                }
+
+                panic!("start and end points are equal or incomparable");
+            };
+
+            let tile = &self.track.grid[cur_row][cur_col];
+
+            if let Some((p1, p2)) = get_line(tile) {
+                match intersection_of_2_lines(p1, p2, start, end) {
+                    // At this point, we found a collision between the two lines. We now need to
+                    // check that the collision actually occurs within the region we're looking at
+                    // -- because it's certainly possible it doesn't.
+                    //
+                    // We have to check against `next_point` here instead of -- for example,
+                    // `x/y_lo/hi` -- because it's possible to find points that exist on the line
+                    // joining `start` to `end` that are technically beyond the assumed bounds.
+                    Some(p) if p.inside_rectangle(current_point, next_point) => {
+                        return Some(p);
+                    }
+                    // If we didn't find an applicable collision, we'll fall through to the next
+                    // iteration, if it exists
+                    _ => (),
                 }
             }
+
+            cur_col = next_col;
+            cur_row = next_row;
+            current_point = next_point;
         }
+
+        // If we got to the end of the loop without finding an intersection point,
+        None
     }
 
     // Checks the car goes over the finishline the correct number of times to finish the game
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
-        let (p1, p2) = self.track.finish_line;
+        let (f1, f2) = self.track.finish_line;
 
-        let intersection = Simulation::intersection_of_2_lines(start, end, p1, p2);
-        //TODO : If p2.x = p1.x then it breaks FIX
-        let ycheck = p1.y + (p2.y - p1.y) * (p1.x - start.x) / (p2.x - p1.x);
+        // There's a few things we can exploit here. We'll assert that they're still true, just in
+        // case they change in the future.
+        //
+        // Firstly, we know that the finish line is always horizontal:
+        debug_assert!(f1.y == f2.y && f1.x != f2.x);
+        // We also know that the car starts facing downwards:
+        debug_assert!(self.track.initial_car_state.angle == 3.0 * PI / 2.0);
+        //
+        // From this, we can check if the point is going across the finish line in the correct
+        // direction (if at all):
+        let correct_direction = start.y > f1.y && end.y < f1.y;
 
-        //Tells you if coming from the correct direction
-        // TODO : may break if doesn't start at 180 angle
-        let correct_direction = ycheck <= start.y;
-        match intersection {
-            None => false,
-            Some(p) => {
-                if Simulation::between_2_points(p1, p2, p)
-                    && Simulation::between_2_points(start, end, p)
-                {
-                    if correct_direction && (self.laps == 0) {
-                        true
-                    } else if correct_direction {
-                        self.laps -= 1;
-                        false
-                    } else {
-                        self.laps += 1;
-                        false
-                    }
-                } else {
-                    false
-                }
+        // We can then just use our handy-dandy `passed_line` function! Maybe it's overkill? Or
+        // maybe it's *just fine*.
+        let get_line = |tile: &GridTile| {
+            if tile.contains_finish_line() {
+                Some((f1, f2))
+            } else {
+                None
             }
-        }
-    }
+        };
 
-    fn between_2_points(p1: Point, p2: Point, point_2_compare: Point) -> bool {
-        let xbetween = p1.x >= point_2_compare.x && p2.x <= point_2_compare.x
-            || p1.x <= point_2_compare.x && p2.x >= point_2_compare.x;
+        let crossed = self.passed_line(start, end, get_line).is_some();
 
-        let ybetween = p1.y >= point_2_compare.y && p2.y <= point_2_compare.y
-            || p1.y <= point_2_compare.y && p2.y >= point_2_compare.y;
-
-        xbetween && ybetween
-    }
-
-    fn intersection_of_2_lines(s1: Point, e1: Point, s2: Point, e2: Point) -> Option<Point> {
-        // Line s1 e1 represented a1x + b1y = c1
-        let a1 = e1.y - s1.y;
-        let b1 = s1.x - e1.x;
-        let c1 = a1 * s1.x + b1 * s1.y;
-
-        // Line s2 e2 represented as a2x + b2y = c2
-        let a2 = e2.y - s2.y;
-        let b2 = s2.x - e2.x;
-        let c2 = a2 * s2.x + b2 * s2.y;
-
-        let det = a1 * b2 - a2 * b1;
-
-        if det.abs() <= 0.00000001 {
-            None
+        if crossed && correct_direction && self.laps == 0 {
+            true
+        } else if crossed && correct_direction {
+            self.laps -= 1;
+            false
+        } else if crossed && !correct_direction {
+            self.laps += 1;
+            false
         } else {
-            let x = (b2 * c1 - b1 * c2) / det;
-            let y = (a1 * c2 - a2 * c1) / det;
-            Some(Point { x, y })
+            false
         }
     }
 
+    /// Returns whether a corner of the car traveling from `start` to `end` would hit the border
+    /// wall of the track
     // TODO - make more intelligent decisions about when the car should die
-    // ASSUMES - that the car is thinner than 1 unit
     fn hit_wall(&self, start: Point, end: Point) -> bool {
-        let mut point_checking = start;
-        let num_checks: i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
-        let delta = (end - start) / (num_checks as f32);
-
-        for _i in 0..=num_checks {
-            if !self.in_bounds(point_checking) {
-                return true;
-            }
-            point_checking += delta;
+        // Easy safeguard. If `passed_line` works correctly, though, this shouldn't ever be needed.
+        if self.track.get_tile(end).is_outside() {
+            return true;
         }
-        false
+
+        self.passed_line(start, end, GridTile::try_border).is_some()
     }
 
     //TODO: Research air resistance
@@ -289,18 +418,6 @@ impl Simulation {
         // Taking the minimum here isn't currently needed with the acceleration formula, but it
         // safeguards against future changes.
         (self.car.speed + actual_acc).min(Car::MAX_SPEED)
-    }
-
-    // TODO - Probably should use more advanced line system
-    // ALL border tiles are assumed to be in the racetrack
-    // TODO - fix this ^
-    fn in_bounds(&self, point: Point) -> bool {
-        let square = self.track.get_tile(point);
-        match square {
-            GridTile::Outside => false,
-            GridTile::Inside { .. } => true,
-            GridTile::Border { .. } => true,
-        }
     }
 
     /// Runs the full simulation, returning only if: (a) the car finishes, (b) the car crashes,
@@ -334,7 +451,7 @@ impl Simulation {
             }
             ticks += 1;
 
-            let start_pos = self.car.pos_of_corners();
+            let corners_start_pos = self.car.pos_of_corners();
 
             let new_speed = self.speed_after_tick(action.acc);
 
@@ -346,9 +463,9 @@ impl Simulation {
 
             hist.history.push(self.car.clone());
 
-            let end_pos = self.car.pos_of_corners();
+            let corners_end_pos = self.car.pos_of_corners();
 
-            for (s, f) in start_pos.iter().zip(end_pos.iter()) {
+            for (s, f) in corners_start_pos.iter().zip(corners_end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
                     let score = Score {
                         successful: false,
@@ -359,9 +476,9 @@ impl Simulation {
                 }
             }
 
-            for (s, f) in start_pos.iter().zip(end_pos.iter()) {
+            for (s, f) in corners_start_pos.iter().zip(corners_end_pos.iter()) {
                 if self.passed_finish_line(*s, *f) {
-                    passed_finish = true
+                    passed_finish = true;
                 }
             }
         }
@@ -380,7 +497,29 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state.clone(),
-            laps: 0,
+            laps: 2,
         }
+    }
+}
+
+fn intersection_of_2_lines(s1: Point, e1: Point, s2: Point, e2: Point) -> Option<Point> {
+    // Line s1 e1 represented a1x + b1y = c1
+    let a1 = e1.y - s1.y;
+    let b1 = s1.x - e1.x;
+    let c1 = a1 * s1.x + b1 * s1.y;
+
+    // Line s2 e2 represented as a2x + b2y = c2
+    let a2 = e2.y - s2.y;
+    let b2 = s2.x - e2.x;
+    let c2 = a2 * s2.x + b2 * s2.y;
+
+    let det = a1 * b2 - a2 * b1;
+
+    if det.abs() <= 0.00000001 {
+        None
+    } else {
+        let x = (b2 * c1 - b1 * c2) / det;
+        let y = (a1 * c2 - a2 * c1) / det;
+        Some(Point { x, y })
     }
 }

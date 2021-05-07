@@ -6,7 +6,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// An (x, y) pair, used to represent points within the region allocated to the racetrack
 #[pyclass]
-#[derive(Copy, Clone, Serialize, Debug)]
+#[derive(Copy, Clone, PartialEq, Serialize, Debug)]
 pub struct Point {
     #[pyo3(get)]
     pub x: f32,
@@ -41,6 +41,14 @@ impl Point {
             x: angle.cos() * radius,
             y: angle.sin() * radius,
         }
+    }
+
+    /// Returns whether the point is inside of the rectangle defined by the two points
+    pub fn inside_rectangle(&self, p1: Point, p2: Point) -> bool {
+        let (min_y, max_y) = (p1.y.min(p2.y), p1.y.max(p2.y));
+        let (min_x, max_x) = (p1.x.min(p2.x), p1.x.max(p2.x));
+
+        min_y <= self.y && self.y <= max_y && min_x <= self.x && self.x <= max_x
     }
 }
 

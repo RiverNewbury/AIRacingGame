@@ -95,6 +95,28 @@ impl GridTile {
             _ => false,
         }
     }
+
+    /// Returns whether the tile contains the finish line
+    pub fn contains_finish_line(&self) -> bool {
+        match self {
+            GridTile::Border {
+                contains_finish_line,
+                ..
+            }
+            | GridTile::Inside {
+                contains_finish_line,
+            } => *contains_finish_line,
+            GridTile::Outside => false,
+        }
+    }
+
+    /// Returns the border line passing through the tile, if it is a border tile
+    pub fn try_border(&self) -> Option<(Point, Point)> {
+        match self {
+            GridTile::Border { border, .. } => Some(*border),
+            _ => None,
+        }
+    }
 }
 
 /// The number of laps of the course required
