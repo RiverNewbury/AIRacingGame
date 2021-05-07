@@ -270,11 +270,8 @@ impl Simulation {
 
             let end_pos = self.car.pos_of_corners();
 
-            //print!("{:?}", hist.history[hist.history.len() - 1]);
-
             for (s, f) in start_pos.iter().zip(end_pos.iter()) {
                 if self.hit_wall(*s, *f) {
-                    print!("{:?}, {:?}", *s, *f);
                     let score = Score {
                         successful: false,
                         time: ticks,
