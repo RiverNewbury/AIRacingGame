@@ -8,16 +8,17 @@
 //! * User code is not restricted in what it does; filesystem access, for example, is allowed
 
 use pyo3::class::basic::PyObjectProtocol;
-use pyo3::prelude::{pyclass, pyproto, FromPyObject, Py, PyResult, Python};
-use pyo3::types::PyDict;
+use pyo3::prelude::*;
 
 pub use crate::sim::{Car, Point};
 
 /// User-submitted code
 ///
-/// For Python code, this is parsed each time it is used
+/// We *would* like to represent this as the Python function, but there's scoping issues when we do
+/// that (e.g. "`CarCommand` is not in scope" errors). Storing it inside of a module somehow
+/// guarantees that they stay in scope, so we use that instead.
 pub struct Code {
-    code: String,
+    code_module: Py<PyModule>,
 }
 
 //TODO: Work out how code simulation actually works
@@ -64,45 +65,33 @@ impl_format!(ExecEnvironment, Car, Point);
 impl Code {
     /// Parses the user's code, returning any error as a string if there was one
     pub fn from_str(input: &str) -> Result<Code, String> {
-        let indented_input: String = input.lines().map(|l| format!("    {}\n", l)).collect();
+        let gil = Python::acquire_gil();
+        let py = gil.python();
 
-        let code = format! {
-r#"
-def __user_main(env):
-    {}
-    return outputs(env)
+        let code_module =
+            PyModule::from_code(py, input, "code.py", "code").map_err(|e| e.to_string())?;
 
-res = __user_main(__env)
-"#,
-            indented_input,
-        };
+        let func = code_module.getattr("outputs").map_err(|e| e.to_string())?;
 
-        Ok(Code { code })
+        if !func.is_callable() {
+            return Err("expected a function `outputs`".into());
+        }
+
+        Ok(Code {
+            code_module: code_module.into(),
+        })
     }
 
     /// Execute's the users's code within the given race environment, returning the output as an
     /// in-Rust directive for the car's movement
     pub fn execute(&self, env: &ExecEnvironment) -> Result<Output, String> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
+        Python::with_gil(|py| {
+            let module = self.code_module.as_ref(py);
+            let func = module.getattr("outputs").map_err(|e| e.to_string())?;
 
-        let locals = PyDict::new(py);
-        let env_obj = Py::new(py, env.clone()).map_err(|e| e.to_string())?;
-        locals
-            .set_item("__env", env_obj)
-            .map_err(|e| e.to_string())?;
-
-        // The result from `Python::run` is a PyResult<()> -- the actual user output is instead
-        // given by the `res` entry in `locals`.
-        py.run(&self.code, None, Some(locals))
-            .map_err(|e| e.to_string())?;
-
-        let output = locals
-            .get_item("res")
-            .ok_or_else(|| "unexpected lack of output from user code".to_owned())?;
-
-        // This doesn't need to be given as explicitly, but it's nice to see what's going on
-        <Output as FromPyObject>::extract(output)
-            .map_err(|e| format!("unable to read user output: {}", e))
+            let output = func.call1((env.clone(),)).map_err(|e| e.to_string())?;
+            <Output as FromPyObject>::extract(output)
+                .map_err(|e| format!("unable to read user output: {}", e))
+        })
     }
 }
