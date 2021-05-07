@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311947, g: 0.38074005, b: 0.35872722, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.35872743, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1204,85 +1204,47 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<style="title">Documentation Goes here</style>
-
-    <style="heading">Heading</style>
-
-    <style="subheading">Subheading</style>
-
-    Normal
-
-    asdf
-
-    asd
-
-    f
-
-    ads
-
-    f
-
-    asdf
-
-    a
-
-    dsf
-
-    a
-
-    ds
-
-    f
-
-    ads
-
-    f
-
-    asd
-
-    fa
-
-    sdf
-
-    as
-
-    df
-
-    as
-
-    df
-
-    asd
-
-    fa
-
-    ds
-
-    f
-
-    ads
-
-    f
-
-    ads
-
-    f
-
-    ads
-
-    fa
-
-    sdf
-
-    asdf
-
-    asdf
-
-    asd
-
-    f
-
-'
+  m_text: "<style=\"title\">Documentation for Scripting Language</style>\n<style=\"heading\">Specific
+    to our scripting language</style>\n<style=\"subheading\">General structure of
+    code</style>\n\nclass CarCommand:\n    # Constructs the `CarCommand` object,
+    optionally setting the\n    # acceleration and steering\n    def __init__(self,
+    acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
+    = steering\n\ndef outputs(env):\n\t# Logic for calculating what to do :)\n\t#\n\t#
+    For this example, we'll just go straight:\n\treturn CarCommand(acc = 0.5, steering
+    = 0.0)\n\n<style=\"subheading\">A bit of explaination of above code</style>\n\nIt
+    should have a function `outputs`, taking a single argument as input. `outputs`
+    is called every so often in order to determine what the car should do. The input,
+    `env` has a couple of fields describing it's state:\n\n* `pos`: a point with
+    fields `x` and `y` to give the current coordinates,\n* `angle`: the direction
+    the car is facing, in radians\n* `speed`: the current speed of the car, from
+    zero to 1\n* `dist_to_wall`: for a range of angles from left to right, the distance
+    to the wall at that angle \n\nThe distances to the nearest wall are provided
+    as a list of floats, with the the first value\ncorresponding to the angle pointing
+    directly left, and the last value pointing directly to the\nright.\n\nThe returned
+    value from the function doesn't *need* to be a `CarCommand` -- any class with
+    `acc` and\n`steering` fields will do. The `acc` field is a float from `-1` to
+    `1` where a value of `1`\ncorresponds to speeding up as much as possible and
+    `-1` to slowing down as much as possible. The\n`steering` field gives a float
+    -- also from `-1` to `1` -- that controls how far to turn the wheel,\nwhere `-1`
+    is all the way to the left, and `1` is all the way to the right.\n\nAs the car
+    speeds up, the amount it's able to turn decreases -- so be careful while driving
+    quickly!\n\n<style=\"subheading\">A quick guide on storing information</style>\n\n#
+    A simple example program, to showcase how we're able to store data\n# between
+    individual calls to `outputs`\n\nclass CarCommand:\n    # Constructs the `CarCommand`
+    object, optionally setting the\n    # acceleration and steering\n    def __init__(self,
+    acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
+    = steering\n\ni = 0\n\ndef outputs(car):\n    global i\n    i += 1\n    print(i)\n   
+    \n    return CarCommand(acc = 0.5, steering = 0.0)\n\nIn the above code the value
+    of i is updated every time and by using global variables you can store whatever
+    your heart desires :)\n\n<style=\"heading\">General Python</style>\n\nAs the
+    saying goes don't reinvent the wheel and so we have opted to link to python tutorials
+    on the web.\n\n<link=\"https://docs.python.org/3/tutorial/index.html\">General
+    python Documentaion </link>\n2 Good Sites for Beginners :\n - <link=\"https://www.w3schools.com/python/\">1
+    (ooh how mysterious)</link>\n - <link=\"https://www.tutorialspoint.com/python/index.htm\">2
+    (who knows where you'll go [well me but I'm not telling you that'd spoil the
+    suprise ; )]) </link>\n\n<link=\"https://www.tutorialspoint.com/numpy/index.htm\">Documentation
+    for More Advanced Users (Numpy)</link>\n\n(Numpy is a data analitics module for
+    python which could potentially be of a lot of use)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be06e2120a2cca9dd88b58e367e4215f, type: 2}
   m_sharedMaterial: {fileID: -3616212640095012375, guid: be06e2120a2cca9dd88b58e367e4215f,
@@ -1898,8 +1860,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1449133490}
   m_HandleRect: {fileID: 1449133489}
   m_Direction: 0
-  m_Value: 0.9999999
-  m_Size: 0.67120004
+  m_Value: 0.9999997
+  m_Size: 0.6712
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

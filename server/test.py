@@ -66,7 +66,7 @@ def outputs(car):
         turn = 0.05
 
     accc = 0
-    if (car.speed < 10):
+    if (car.speed < 0.5):
         accc = 0.3
 
     #print(angle)
