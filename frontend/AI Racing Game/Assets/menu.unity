@@ -1181,8 +1181,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -500}
-  m_SizeDelta: {x: 476.05, y: 1000}
+  m_AnchoredPosition: {x: 0, y: -600}
+  m_SizeDelta: {x: 476.05, y: 1200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &854325220
 MonoBehaviour:
@@ -1238,13 +1238,11 @@ MonoBehaviour:
     the value of i is updated every time and by using global variables you can store
     whatever your heart desires :)\n\n<style=\"heading\">General Python</style>\n\nAs
     the saying goes don't reinvent the wheel and so we have opted to link to python
-    tutorials on the web.\n\n<link=\"https://docs.python.org/3/tutorial/index.html\">General
-    python Documentaion </link>\n2 Good Sites for Beginners :\n - <link=\"https://www.w3schools.com/python/\">1
-    (ooh how mysterious)</link>\n - <link=\"https://www.tutorialspoint.com/python/index.htm\">2
-    (who knows where you'll go [well me but I'm not telling you that'd spoil the
-    suprise ; )]) </link>\n\n<link=\"https://www.tutorialspoint.com/numpy/index.htm\">Documentation
-    for More Advanced Users (Numpy)</link>\n\n(Numpy is a data analitics module for
-    python which could potentially be of a lot of use)"
+    tutorials on the web.\n\n<link=\"https://docs.python.org/3/tutorial/index.html\"><u>General
+    python Documentaion </u></link>\n2 Good Sites for Beginners :\n - <link=\"https://www.w3schools.com/python/\"><u>w3schools</u></link>\n
+    - <link=\"https://www.tutorialspoint.com/python/index.htm\"><u>Tutorialspoint</u></link>\n\n<u><link=\"https://www.tutorialspoint.com/numpy/index.htm\">Documentation
+    for More Advanced Users (Numpy)</u></link>\n\n(Numpy is a data analytics module
+    for python which could potentially be of a lot of use)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be06e2120a2cca9dd88b58e367e4215f, type: 2}
   m_sharedMaterial: {fileID: -3616212640095012375, guid: be06e2120a2cca9dd88b58e367e4215f,
@@ -1860,8 +1858,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1449133490}
   m_HandleRect: {fileID: 1449133489}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.33560002
+  m_Value: 0.99999994
+  m_Size: 0.27966666
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
