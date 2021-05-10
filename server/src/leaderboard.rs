@@ -9,19 +9,13 @@ pub struct Leaderboard {
     rankings: BTreeSet<RankedSource>,
 }
 
-struct RankedSource {
+#[derive(serde::Serialize)]
+pub struct RankedSource {
     username: String,
     score: Score,
     source: String,
 }
 
-// The entry corresponding to a single run in the leaderboard. This is essentially just what we're
-// storing in the leaderboard, minus the source code.
-#[derive(serde::Serialize)]
-pub struct LeaderboardEntry {
-    username: String,
-    score: Score,
-}
 
 impl PartialEq for RankedSource {
     fn eq(&self, other: &Self) -> bool {
@@ -61,14 +55,15 @@ impl Leaderboard {
     }
 
     // Produces an iterator over the top `n` entries in the leaderboard
-    pub fn top_n(&self, n: usize) -> impl '_ + Iterator<Item = LeaderboardEntry> {
+    pub fn top_n(&self, n: usize) -> impl '_ + Iterator<Item = RankedSource> {
         self.rankings
             .iter()
             .rev()
             .take(n)
-            .map(|e| LeaderboardEntry {
+            .map(|e| RankedSource {
                 username: e.username.clone(),
                 score: e.score.clone(),
+                source: e.source.clone(),
             })
     }
 }

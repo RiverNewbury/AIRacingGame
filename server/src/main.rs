@@ -20,7 +20,7 @@ mod leaderboard;
 mod sim;
 
 use code::Code;
-use leaderboard::{Leaderboard, LeaderboardEntry};
+use leaderboard::{Leaderboard, RankedSource};
 use sim::{Racetrack, Simulation, SimulationData};
 
 lazy_static! {
@@ -51,7 +51,7 @@ fn exec_user_code(username: String, source_code_raw: String) -> RequestResult<Si
 }
 
 #[get("/leaderboard/<n>")]
-fn get_leaderboard(n: usize) -> RequestResult<Vec<LeaderboardEntry>> {
+fn get_leaderboard(n: usize) -> RequestResult<Vec<RankedSource>> {
     let lb_guard = LEADERBOARD.lock().unwrap();
     let entries: Vec<_> = lb_guard.top_n(n).collect();
     drop(lb_guard);

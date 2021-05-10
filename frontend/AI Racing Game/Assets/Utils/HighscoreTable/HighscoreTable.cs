@@ -15,7 +15,7 @@ public class HighscoreTable : MonoBehaviour {
     public Score score;
     public History History;
     public LeaderboardData LBData;
-    public LeaderboardEntry[] LBList;
+    public RankedSource[] LBList;
 
     private void Awake() {
         entryContainer = transform.Find("highscoreEntryContainer");

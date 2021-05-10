@@ -39,14 +39,15 @@ public struct SimulationData {
 }
 
 [Serializable]
-public struct LeaderboardEntry {
+public struct RankedSource {
 	public string username;
 	public Score score;
+	public string source;
 }
 
 [Serializable]
 public struct LeaderboardData {
-	public LeaderboardEntry[] entries;
+	public RankedSource[] entries;
 }
 
 public class InfoObject : MonoBehaviour
