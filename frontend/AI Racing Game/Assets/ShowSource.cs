@@ -6,14 +6,16 @@ using UnityEngine.UI;
 
 public class ShowSource : MonoBehaviour
 {
-	public Text sourceText;
-	public GameObject scrollView;
+	Text sourceText;
+	Text titleText;
+	GameObject scrollView;
 	InfoObject infoObject;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		sourceText = GameObject.Find("Source text").GetComponent<Text>();
+		titleText = GameObject.Find("window title").GetComponent<Text>();
 		scrollView = GameObject.Find("Scroll View");
 		infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
 	}
@@ -38,6 +40,9 @@ public class ShowSource : MonoBehaviour
 		// set the text to the source code
 		string source = infoObject.leaderboardData.entries[pos-1].source;
 		sourceText.text = source;
+
+		// set window title
+		titleText.text = infoObject.leaderboardData.entries[pos-1].username.ToUpper() + "'S SCRIPT";
 
 		// set height and pos of source text
 		const int lineHeight = 15;
