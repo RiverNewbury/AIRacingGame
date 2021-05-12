@@ -41,11 +41,13 @@ fn exec_user_code(username: String, source_code_raw: String) -> RequestResult<Si
         .simulate()
         .map_err(|e| BadRequest(Some(e)))?;
 
-    // Add the result of the simulation to the leaderboard
-    LEADERBOARD
-        .lock()
-        .expect("leaderboard mutex already poisoned!")
-        .add(username, source_code, score);
+    if score.successful {
+        // Add the result of the simulation to the leaderboard
+        LEADERBOARD
+            .lock()
+            .expect("leaderboard mutex already poisoned!")
+            .add(username, source_code, score);
+    }
 
     Ok(Json(SimulationData { history, score }))
 }
