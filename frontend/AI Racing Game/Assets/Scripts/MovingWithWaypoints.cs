@@ -55,11 +55,8 @@ public class MovingWithWaypoints : MonoBehaviour
 
     void Rotate(float angle)
     {
-        //transform.Rotate(Vector3.forward * angle);
-        //transform.Rotation.z += angle;
-        //var z = transform.localRotation.z;
-        //transform.localRotation = Quaternion.Euler(0, 0, z+angle);
-        this.transform.Rotate(Vector3.left * (angle * Time.deltaTime * tps));
+        Quaternion targetRotation = Quaternion.LookRotation(new Vector3(0,0,angle), Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * tps);
     }
     
     // Start is called before the first frame update
