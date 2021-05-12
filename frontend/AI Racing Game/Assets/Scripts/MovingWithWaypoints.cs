@@ -5,8 +5,11 @@ using UnityEngine;
 using AIRacing.Utils;
 using UnityEngine.SceneManagement;
 
+
 public class MovingWithWaypoints : MonoBehaviour
 {
+    const float PI = 3.14159f;
+
     //public Transform MWW;
     public GameObject Square;
     //public Transform EndingText;
@@ -55,8 +58,10 @@ public class MovingWithWaypoints : MonoBehaviour
 
     void Rotate(float angle)
     {
-        Quaternion targetRotation = Quaternion.LookRotation(new Vector3(0,0,angle), Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * tps);
+        //Quaternion targetRotation = Quaternion.LookRotation(new Vector3(0,0,angle), Vector3.up);
+        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * tps);
+	this.gameObject.transform.eulerAngles = new Vector3(0,0,angle*2*PI);
+	Debug.Log(angle*2*PI);
     }
     
     // Start is called before the first frame update
@@ -87,7 +92,7 @@ public class MovingWithWaypoints : MonoBehaviour
             var temp = ConvertPos(history[i].pos, serverDif, currentPosition);
             sentwps[i,0]= temp[0];
             sentwps[i,1]= temp[1];
-            sentas[i] = (float)ConvertAngle(history[i].angle);
+            sentas[i] = /*(float)ConvertAngle*/(history[i].angle);
             i++;
         }
     }
@@ -118,7 +123,7 @@ public class MovingWithWaypoints : MonoBehaviour
         else {
             var newP = new Vector3(sentwps[current,0],sentwps[current,1], -1.0f);
             transform.position = Vector3.MoveTowards(transform.position, newP, Time.deltaTime * tps);
-            var change = sentas[current] - sentas[current - 1];
+            /*var change = sentas[current] - sentas[current - 1];
             if (change>180f)
             {
                 change -= 360f;
@@ -126,8 +131,8 @@ public class MovingWithWaypoints : MonoBehaviour
             if (change < -180f)
             {
                 change += 360f;
-            }
-            Rotate(change);
+            }*/
+            Rotate(sentas[current]);
 
         }
     }
