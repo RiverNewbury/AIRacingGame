@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9268b4ee76c704248bed4ce3ed8d381d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Square: {fileID: 0}
   infoObject: {fileID: 0}
   simData:
     history:
@@ -289,6 +290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9268b4ee76c704248bed4ce3ed8d381d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Square: {fileID: 0}
   infoObject: {fileID: 0}
   simData:
     history:

@@ -7,10 +7,12 @@ using System.Numerics;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using TMPro;
+
 
 public class sendCode : MonoBehaviour
 {
-	public InputField codeField;
+	public TMP_InputField codeField;
 	public InputField usernameField;
 	InfoObject infoObject;
 
@@ -31,8 +33,9 @@ public class sendCode : MonoBehaviour
 		if (usernameField.text == "") {
 			Debug.Log("No username");
 		} else {
-			UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, codeField.text);
-			postRequest.timeout = 5;
+			UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, codeField.text.Substring(16));
+			Debug.Log(codeField.text.Substring(16));
+			postRequest.timeout = 20;
 			postRequest.SendWebRequest();
 
 			// wait for response
