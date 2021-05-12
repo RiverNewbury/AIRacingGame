@@ -50,11 +50,11 @@
 
  + Luca
    - <del>Finish off the server facing bit of the front end</del>
-   - Help beth with the server facing part of the client
+   - <del>Help beth with the server facing part of the client</del>
 
  + General Front end
-   - Improve visuals : make the car not a sphere + add skins for car?
+   - <del>Improve visuals : make the car not a sphere + add skins for car?</del>
    - Market research
 
  + General Back End
-   - Do docs for scripting language
+   - <del>Do docs for scripting language</del>
