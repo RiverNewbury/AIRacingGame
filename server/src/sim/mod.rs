@@ -70,7 +70,7 @@ pub struct Simulation {
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Serialize, Debug)]
 pub struct Score {
     /// Whether the attempt was successful
-    successful: bool,
+    pub successful: bool,
 
     /// The number of ticks before the simulation ended - either by finishing, crashing into a
     /// wall, or timing out.
@@ -349,7 +349,7 @@ impl Simulation {
             code,
             track,
             car: track.initial_car_state.clone(),
-            laps: track.laps*4 - 2,
+            laps: track.laps * 4 - 2,
         }
     }
 }
