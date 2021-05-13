@@ -158,39 +158,6 @@ impl Simulation {
         }
     }
 
-    fn passed_finish_line2(&self, start: Point, end: Point) -> bool {
-        let mut point_checking = start;
-        let num_checks: i32 = ((end - start).length() * NUMBER_CHECKS_PER_UNIT_DIST) as i32;
-        let delta = (end - start) / (num_checks as f32);
-        for i in 0..num_checks {
-            point_checking += delta;
-            if self.am_on_finish_line(point_checking) && self.car.speed > 0.0 {
-                return true;
-            }
-        }
-        false
-    }
-
-    fn am_on_finish_line(&self, p: Point) -> bool {
-        let square = self.track.get_tile(p);
-        match square {
-            GridTile::Outside => false,
-            GridTile::Inside {
-                contains_finish_line,
-            } => contains_finish_line,
-            GridTile::Border {
-                contains_finish_line,
-                ..
-            } => {
-                if contains_finish_line && self.in_bounds(p) {
-                    true
-                } else {
-                    false
-                }
-            }
-        }
-    }
-
     // Checks the car goes over the finishline the correct number of times to finish the game
     fn passed_finish_line(&mut self, start: Point, end: Point) -> bool {
         let (p1, p2) = self.track.finish_line;

@@ -1,19 +1,25 @@
+# This is our test python code!
 class CarCommand:
+    # Constructs the `CarCommand` object, optionally setting the
+    # acceleration and steering
     def __init__(self, acc: float = 0.0, steering: float = 0.0):
         self.acc = acc
         self.steering = steering
 
 def outputs(car):
-    # print(car.dist_to_wall)
+    left = car.dist_to_wall[0]
+    right = car.dist_to_wall[-1]
 
-    best_i = -1
-    max_d = -1
-    for i, d in enumerate(car.dist_to_wall):
-        if d > max_d:
-            best_i = i
-            max_d = d
+    turn = 0
 
-    dist_len = len(car.dist_to_wall)
-    target_angle = 2 * (best_i / (dist_len - 1)) - 1
+    if  left > 2* right :
+        turn = -0.1
+    elif right > 2* left:
+        turn = 0.1
 
-    return CarCommand(acc = 0.3, steering = target_angle)
+    accc = 0
+    if (car.speed < 0.3):
+        accc = 0.1
+
+    #print(angle)
+    return CarCommand(acc = accc, steering = turn)
