@@ -1456,7 +1456,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0.9811321, g: 0.9811321, b: 0.9811321, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1520,12 +1520,12 @@ MonoBehaviour:
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_CustomCaretColor: 0
+  m_CaretColor: {r: 0, g: 1, b: 0.13092232, a: 1}
+  m_CustomCaretColor: 1
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: "<color=#6AD676>\nclass CarCommand:\n    # Constructs the `CarCommand`
-    object, optionally setting the\n    # acceleration and steering\n    def __init__(self,
-    acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
+  m_Text: "class CarCommand:\n    # Constructs the `CarCommand` object, optionally
+    setting the\n    # acceleration and steering\n    def __init__(self, acc: float
+    = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
     = steering\n\ndef outputs(car):\n    return CarCommand(acc = 0, steering = 0)\n"
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
@@ -2343,13 +2343,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<color=#6AD676>\nclass CarCommand:\n    # Constructs the `CarCommand`
-    object, optionally setting the\n    # acceleration and steering\n    def __init__(self,
-    acc: float = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
+  m_text: "class CarCommand:\n    # Constructs the `CarCommand` object, optionally
+    setting the\n    # acceleration and steering\n    def __init__(self, acc: float
+    = 0.0, steering: float = 0.0):\n        self.acc = acc\n        self.steering
     = steering\n\ndef outputs(car):\n    return CarCommand(acc = 0, steering = 0)\n\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: be06e2120a2cca9dd88b58e367e4215f, type: 2}
-  m_sharedMaterial: {fileID: -3616212640095012375, guid: be06e2120a2cca9dd88b58e367e4215f,
+  m_fontAsset: {fileID: 11400000, guid: cae7c5a340f7765a9b2f8f0d9850d77b, type: 2}
+  m_sharedMaterial: {fileID: -3616212640095012375, guid: cae7c5a340f7765a9b2f8f0d9850d77b,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

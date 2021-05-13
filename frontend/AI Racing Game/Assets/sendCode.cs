@@ -33,8 +33,7 @@ public class sendCode : MonoBehaviour
 		if (usernameField.text == "") {
 			Debug.Log("No username");
 		} else {
-			UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, codeField.text.Substring(15));
-			Debug.Log(codeField.text.Substring(15));
+			UnityWebRequest postRequest = UnityWebRequest.Post(infoObject.serverAddress + ":8000/run/" + usernameField.text, codeField.text);
 			postRequest.timeout = 20;
 			postRequest.SendWebRequest();
 
