@@ -60,8 +60,8 @@ public class MovingWithWaypoints : MonoBehaviour
     {
         //Quaternion targetRotation = Quaternion.LookRotation(new Vector3(0,0,angle), Vector3.up);
         //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * tps);
-	this.gameObject.transform.eulerAngles = new Vector3(0,0,angle*2*PI);
-	Debug.Log(angle*2*PI);
+	this.gameObject.transform.eulerAngles = new Vector3(0,0,angle*180/PI-90);
+	Debug.Log(angle*180/PI-90);
     }
     
     // Start is called before the first frame update
@@ -123,17 +123,9 @@ public class MovingWithWaypoints : MonoBehaviour
         else {
             var newP = new Vector3(sentwps[current,0],sentwps[current,1], -1.0f);
             transform.position = Vector3.MoveTowards(transform.position, newP, Time.deltaTime * tps);
-            /*var change = sentas[current] - sentas[current - 1];
-            if (change>180f)
-            {
-                change -= 360f;
-            }
-            if (change < -180f)
-            {
-                change += 360f;
-            }*/
-            Rotate(sentas[current]);
 
+	    Debug.Log(sentas[current]);
+            Rotate(sentas[current]);
         }
     }
 }
