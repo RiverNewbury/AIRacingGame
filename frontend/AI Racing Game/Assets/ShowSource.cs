@@ -8,7 +8,7 @@ public class ShowSource : MonoBehaviour
 {
 	Text sourceText;
 	Text titleText;
-	GameObject scrollView;
+	GameObject scriptWindow;
 	InfoObject infoObject;
 
 	// Start is called before the first frame update
@@ -16,7 +16,7 @@ public class ShowSource : MonoBehaviour
 	{
 		sourceText = GameObject.Find("Source text").GetComponent<Text>();
 		titleText = GameObject.Find("window title").GetComponent<Text>();
-		scrollView = GameObject.Find("Scroll View");
+		scriptWindow = GameObject.Find("Script window");
 		infoObject = (InfoObject)UnityEngine.Object.FindObjectOfType(typeof(InfoObject));
 	}
 
@@ -29,7 +29,7 @@ public class ShowSource : MonoBehaviour
 	public void ShowSourceOnClick()
 	{
 		// show text
-		scrollView.SetActive(true);
+		scriptWindow.SetActive(true);
 		//sourceText.gameObject.SetActive(true);
 
 		// process pos
